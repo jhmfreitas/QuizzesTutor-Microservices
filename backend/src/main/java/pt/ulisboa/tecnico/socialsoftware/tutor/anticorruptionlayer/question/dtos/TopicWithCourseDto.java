@@ -1,6 +1,7 @@
-package pt.ulisboa.tecnico.socialsoftware.tutor.question.dto;
+package pt.ulisboa.tecnico.socialsoftware.tutor.anticorruptionlayer.question.dtos;
 
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Topic;
+import pt.ulisboa.tecnico.socialsoftware.tutor.tournament.domain.TournamentTopic;
 
 import java.io.Serializable;
 
@@ -13,6 +14,12 @@ public class TopicWithCourseDto implements Serializable {
         this.id = topic.getId();
         this.name = topic.getName();
         this.courseId = topic.getCourse().getId();
+    }
+
+    public TopicWithCourseDto(TournamentTopic topic) {
+        this.id = topic.getId();
+        this.name = topic.getName();
+        this.courseId = topic.getCourseId();
     }
 
     public Integer getId() {

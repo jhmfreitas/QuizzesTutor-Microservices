@@ -1,8 +1,9 @@
-package pt.ulisboa.tecnico.socialsoftware.tutor.anticorruptionlayer;
+package pt.ulisboa.tecnico.socialsoftware.tutor.anticorruptionlayer.tournament;
 
 import org.springframework.stereotype.Component;
+import pt.ulisboa.tecnico.socialsoftware.tutor.anticorruptionlayer.CourseExecutionStatus;
 import pt.ulisboa.tecnico.socialsoftware.tutor.execution.dto.CourseExecutionDto;
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.TopicDto;
+import pt.ulisboa.tecnico.socialsoftware.tutor.anticorruptionlayer.question.dtos.TopicWithCourseDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.tournament.domain.TournamentCourseExecution;
 import pt.ulisboa.tecnico.socialsoftware.tutor.tournament.domain.TournamentCreator;
 import pt.ulisboa.tecnico.socialsoftware.tutor.tournament.domain.TournamentParticipant;
@@ -21,8 +22,8 @@ public class TournamentACL {
                 courseExecution.getCourseId(), CourseExecutionStatus.valueOf(courseExecution.getStatus().toString()), courseExecution.getAcronym());
     }
 
-    public TournamentTopic topicToTournamentTopic(TopicDto topic) {
-        return new TournamentTopic(topic.getId(), topic.getName(), topic.getCourse().getId());
+    public TournamentTopic topicToTournamentTopic(TopicWithCourseDto topic) {
+        return new TournamentTopic(topic.getId(), topic.getName(), topic.getCourseId());
     }
 
     public TournamentParticipant userToTournamentParticipant(UserDto user) {

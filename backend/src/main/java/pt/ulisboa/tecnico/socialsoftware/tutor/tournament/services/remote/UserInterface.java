@@ -1,8 +1,10 @@
-package pt.ulisboa.tecnico.socialsoftware.tutor.tournament.services;
+package pt.ulisboa.tecnico.socialsoftware.tutor.tournament.services.remote;
 
-import pt.ulisboa.tecnico.socialsoftware.tutor.user.dto.UserDto;
+import pt.ulisboa.tecnico.socialsoftware.tutor.tournament.domain.TournamentCreator;
+import pt.ulisboa.tecnico.socialsoftware.tutor.tournament.domain.TournamentParticipant;
 
 public interface UserInterface {
+    TournamentCreator getTournamentCreator(Integer userId);
 
-    UserDto getUserInfo(Integer userId);
+    TournamentParticipant getTournamentParticipant(Integer userId);
 }

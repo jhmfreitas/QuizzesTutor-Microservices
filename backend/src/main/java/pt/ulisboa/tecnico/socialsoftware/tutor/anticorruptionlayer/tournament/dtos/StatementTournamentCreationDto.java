@@ -1,7 +1,9 @@
-package pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto;
+package pt.ulisboa.tecnico.socialsoftware.tutor.anticorruptionlayer.tournament.dtos;
 
+import pt.ulisboa.tecnico.socialsoftware.tutor.anticorruptionlayer.question.dtos.TopicWithCourseDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.TopicDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.tournament.domain.Tournament;
+import pt.ulisboa.tecnico.socialsoftware.tutor.tournament.domain.TournamentTopic;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -14,13 +16,13 @@ public class StatementTournamentCreationDto implements Serializable {
     private LocalDateTime startTime;
     private LocalDateTime endTime;
     private Integer numberOfQuestions;
-    private Set<TopicDto> topics = new HashSet<>();
+    private Set<TopicWithCourseDto> topics = new HashSet<>();
 
     public StatementTournamentCreationDto() {}
 
     public StatementTournamentCreationDto(Tournament tournament) {
         setNumberOfQuestions(tournament.getNumberOfQuestions());
-        setTopics(tournament.getTopics().stream().map(TopicDto::new).collect(Collectors.toSet()));
+        setTopics(tournament.getTopics().stream().map(TopicWithCourseDto::new).collect(Collectors.toSet()));
         setStartTime(tournament.getStartTime());
         setEndTime(tournament.getEndTime());
         setId(tournament.getId());
@@ -34,11 +36,13 @@ public class StatementTournamentCreationDto implements Serializable {
         this.numberOfQuestions = numberOfQuestions;
     }
 
-    public Set<TopicDto> getTopics() {
+    public Set<TopicWithCourseDto> getTopics() {
         return topics;
     }
 
-    public void setTopics(Set<TopicDto> topics) { this.topics = topics; }
+    public void setTopics(Set<TopicWithCourseDto> topics) {
+        this.topics = topics;
+    }
 
     public Integer getId() {
         return id;

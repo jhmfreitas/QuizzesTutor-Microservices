@@ -1,4 +1,4 @@
-package pt.ulisboa.tecnico.socialsoftware.tutor.anticorruptionlayer.dtos.Tournament;
+package pt.ulisboa.tecnico.socialsoftware.tutor.anticorruptionlayer.tournament.dtos;
 
 import pt.ulisboa.tecnico.socialsoftware.tutor.anticorruptionlayer.CourseExecutionStatus;
 import pt.ulisboa.tecnico.socialsoftware.tutor.tournament.domain.TournamentCourseExecution;
