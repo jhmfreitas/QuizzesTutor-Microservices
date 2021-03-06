@@ -1,4 +1,4 @@
-package pt.ulisboa.tecnico.socialsoftware.tutor.tournament;
+package pt.ulisboa.tecnico.socialsoftware.tutor.tournament.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.retry.annotation.Backoff;
@@ -7,14 +7,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.AnswerService;
+import pt.ulisboa.tecnico.socialsoftware.tutor.anticorruptionlayer.TournamentACL;
 import pt.ulisboa.tecnico.socialsoftware.tutor.tournament.domain.*;
-import pt.ulisboa.tecnico.socialsoftware.tutor.tournament.dto.TournamentParticipantDto;
+import pt.ulisboa.tecnico.socialsoftware.tutor.anticorruptionlayer.dtos.Tournament.TournamentParticipantDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.utils.DateHandler;
 import pt.ulisboa.tecnico.socialsoftware.tutor.execution.CourseExecutionService;
-import pt.ulisboa.tecnico.socialsoftware.tutor.execution.domain.CourseExecution;
-import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.repository.CourseExecutionRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Topic;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.TopicRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.QuizService;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz;
@@ -22,9 +20,8 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.dto.QuizDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.repository.QuizRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.StatementQuizDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.StatementTournamentCreationDto;
-import pt.ulisboa.tecnico.socialsoftware.tutor.tournament.dto.TournamentDto;
+import pt.ulisboa.tecnico.socialsoftware.tutor.anticorruptionlayer.dtos.Tournament.TournamentDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.tournament.repository.TournamentRepository;
-import pt.ulisboa.tecnico.socialsoftware.tutor.user.domain.User;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.repository.UserRepository;
 
 import java.sql.SQLException;
@@ -37,9 +34,7 @@ import java.util.stream.Collectors;
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
 
 @Service
-public class TournamentService {
-    @Autowired
-    private CourseExecutionRepository courseExecutionRepository;
+public class TournamentProvidedService {
 
     @Autowired
     private QuizService quizService;
@@ -61,29 +56,27 @@ public class TournamentService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private TournamentACL tournamentACL;
+
     //TODO: Implement anti corruption layer for conversion of types
     @Retryable(value = { SQLException.class }, backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public TournamentDto createTournament(Integer userId, Integer executionId, Set<Integer> topicsId, TournamentDto tournamentDto) {
         checkInput(userId, topicsId, tournamentDto);
-        User user = userRepository.findById(userId).orElseThrow(() -> new TutorException(USER_NOT_FOUND, userId));
-        CourseExecution courseExecution = courseExecutionRepository.findById(executionId).orElseThrow(() -> new TutorException(COURSE_EXECUTION_NOT_FOUND, executionId));
+
+        TournamentCreator creator = tournamentACL.userToTournamentCreator(userId);
+        TournamentCourseExecution tournamentCourseExecution = tournamentACL.courseExecutionToTournamentCourseExecution(executionId);
 
         Set<TournamentTopic> topics = new HashSet<>();
         for (Integer topicId : topicsId) {
-            Topic topic = topicRepository.findById(topicId)
-                    .orElseThrow(() -> new TutorException(TOPIC_NOT_FOUND, topicId));
-
-            topics.add(new TournamentTopic(topic.getId(), topic.getName(), topic.getCourse().getId()));
+            topics.add(tournamentACL.topicToTournamentTopic(topicId));
         }
 
         if (topics.isEmpty()) {
             throw new TutorException(TOURNAMENT_MISSING_TOPICS);
         }
-        TournamentCourseExecution tournamentCourseExecution = new TournamentCourseExecution(courseExecution.getId(),
-                courseExecution.getCourse().getId(), TournamentCourseExecution.Status.valueOf(courseExecution.getStatus().toString()), courseExecution.getAcronym());
-
-        TournamentCreator creator = new TournamentCreator(user.getId(), user.getUsername(), user.getName());
 
         Tournament tournament = new Tournament(creator, tournamentCourseExecution, topics, tournamentDto);
         tournamentRepository.save(tournament);
@@ -126,9 +119,8 @@ public class TournamentService {
     @Retryable(value = { SQLException.class }, backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public void joinTournament(Integer userId, Integer tournamentId, String password) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new TutorException(USER_NOT_FOUND, userId));
         Tournament tournament = checkTournament(tournamentId);
-        TournamentParticipant participant = new TournamentParticipant(user.getId(), user.getUsername(), user.getName());
+        TournamentParticipant participant = tournamentACL.userToTournamentParticipant(userId);
         tournament.addParticipant(participant, password);
     }
 
@@ -147,9 +139,8 @@ public class TournamentService {
     @Retryable(value = { SQLException.class }, backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public void leaveTournament(Integer userId, Integer tournamentId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new TutorException(USER_NOT_FOUND, userId));
         Tournament tournament = checkTournament(tournamentId);
-        TournamentParticipant participant = new TournamentParticipant(user.getId(), user.getUsername(), user.getName());
+        TournamentParticipant participant = tournamentACL.userToTournamentParticipant(userId);
         tournament.removeParticipant(participant);
     }
 
@@ -162,9 +153,10 @@ public class TournamentService {
 
         Set<TournamentTopic> topics = new HashSet<>();
         for (Integer topicId : topicsId) {
-            Topic topic = topicRepository.findById(topicId)
+            /*Topic topic = topicRepository.findById(topicId)
                     .orElseThrow(() -> new TutorException(TOPIC_NOT_FOUND, topicId));
-            topics.add(new TournamentTopic(topic.getId(), topic.getName(), topic.getCourse().getId()));
+            topics.add(new TournamentTopic(topic.getId(), topic.getName(), topic.getCourse().getId()));*/
+            topics.add(tournamentACL.topicToTournamentTopic(topicId));
         }
 
         tournament.updateTournament(tournamentDto, topics);

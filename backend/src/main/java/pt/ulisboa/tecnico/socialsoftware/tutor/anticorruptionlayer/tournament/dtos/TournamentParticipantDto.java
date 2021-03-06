@@ -1,4 +1,4 @@
-package pt.ulisboa.tecnico.socialsoftware.tutor.tournament.dto;
+package pt.ulisboa.tecnico.socialsoftware.tutor.anticorruptionlayer.dtos.Tournament;
 
 import pt.ulisboa.tecnico.socialsoftware.tutor.tournament.domain.TournamentParticipant;
 
