@@ -89,7 +89,9 @@ public class TournamentProvidedService {
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public void joinTournament(Integer userId, Integer tournamentId, String password) {
         Tournament tournament = checkTournament(tournamentId);
+
         TournamentParticipant participant = tournamentRequiredService.getTournamentParticipant(userId);
+
         tournament.addParticipant(participant, password);
     }
 
@@ -110,7 +112,9 @@ public class TournamentProvidedService {
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public void leaveTournament(Integer userId, Integer tournamentId) {
         Tournament tournament = checkTournament(tournamentId);
+
         TournamentParticipant participant = tournamentRequiredService.getTournamentParticipant(userId);
+
         tournament.removeParticipant(participant);
     }
 
