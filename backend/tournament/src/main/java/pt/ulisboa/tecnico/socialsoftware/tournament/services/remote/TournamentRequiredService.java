@@ -3,12 +3,12 @@ package pt.ulisboa.tecnico.socialsoftware.tournament.services.remote;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pt.ulisboa.tecnico.socialsoftware.dtos.execution.CourseExecutionDto;
+import pt.ulisboa.tecnico.socialsoftware.dtos.execution.CourseExecutionStatus;
 import pt.ulisboa.tecnico.socialsoftware.dtos.quiz.QuizDto;
 import pt.ulisboa.tecnico.socialsoftware.dtos.tournament.ExternalStatementCreationDto;
 import pt.ulisboa.tecnico.socialsoftware.dtos.tournament.TopicWithCourseDto;
 import pt.ulisboa.tecnico.socialsoftware.dtos.user.UserDto;
 import pt.ulisboa.tecnico.socialsoftware.exceptions.TutorException;
-import pt.ulisboa.tecnico.socialsoftware.tournament.TournamentACL;
 import pt.ulisboa.tecnico.socialsoftware.tournament.domain.TournamentCourseExecution;
 import pt.ulisboa.tecnico.socialsoftware.tournament.domain.TournamentCreator;
 import pt.ulisboa.tecnico.socialsoftware.tournament.domain.TournamentParticipant;
@@ -28,13 +28,10 @@ public class TournamentRequiredService {
     @Autowired
     private MonolithService monolithService;
 
-    @Autowired
-    private TournamentACL tournamentACL;
-
     public TournamentCreator getTournamentCreator(Integer userId) {
         UserDto userDto = monolithService.findUserById(userId);
         if (userDto != null) {
-            return tournamentACL.userToTournamentCreator(userDto);
+            return new TournamentCreator(userDto.getId(), userDto.getUsername(), userDto.getName());
         }
         else {
             throw new TutorException(USER_NOT_FOUND, userId);
@@ -44,7 +41,7 @@ public class TournamentRequiredService {
     public TournamentParticipant getTournamentParticipant(Integer userId) {
         UserDto userDto = monolithService.findUserById(userId);
         if (userDto != null) {
-            return tournamentACL.userToTournamentParticipant(userDto);
+            return new TournamentParticipant(userDto.getId(), userDto.getUsername(), userDto.getName());
         }
         else {
             throw new TutorException(USER_NOT_FOUND, userId);
@@ -53,7 +50,8 @@ public class TournamentRequiredService {
 
     public TournamentCourseExecution getTournamentCourseExecution(Integer courseExecutionId) {
         CourseExecutionDto courseExecutionDto = monolithService.getCourseExecutionById(courseExecutionId);
-        return tournamentACL.courseExecutionToTournamentCourseExecution(courseExecutionDto);
+        return new TournamentCourseExecution(courseExecutionDto.getCourseExecutionId(),
+                courseExecutionDto.getCourseId(), CourseExecutionStatus.valueOf(courseExecutionDto.getStatus().toString()), courseExecutionDto.getAcronym());
     }
 
     public Integer getDemoCourseExecutionId() {
@@ -65,13 +63,14 @@ public class TournamentRequiredService {
         Set<TournamentTopic> topics = new HashSet<>();
 
         for (TopicWithCourseDto topicWithCourseDto : topicWithCourseDtoList) {
-            topics.add(tournamentACL.topicToTournamentTopic(topicWithCourseDto));
+            topics.add(new TournamentTopic(topicWithCourseDto.getId(), topicWithCourseDto.getName(),
+                    topicWithCourseDto.getCourseId()));
         }
 
         return topics;
     }
 
-    public Integer getQuizId(Integer creatorId, Integer courseExecutionId, ExternalStatementCreationDto quizDetails) {
+    public Integer createQuiz(Integer creatorId, Integer courseExecutionId, ExternalStatementCreationDto quizDetails) {
         return monolithService.generateQuizAndGetId(creatorId, courseExecutionId, quizDetails);
     }
 
