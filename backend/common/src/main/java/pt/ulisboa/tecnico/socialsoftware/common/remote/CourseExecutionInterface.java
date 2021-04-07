@@ -17,8 +17,8 @@ public class CourseExecutionInterface implements CourseExecutionContract{
         logger.info("findCourseExecution id:{}", courseExecutionId);
         RestTemplate restTemplate = new RestTemplate();
         try {
-            CourseExecutionDto courseExecutionDto = restTemplate.postForObject(ENDPOINT + "rest/execution/find?courseExecutionId=" + courseExecutionId,
-                    null, CourseExecutionDto.class);
+            CourseExecutionDto courseExecutionDto = restTemplate.getForObject(ENDPOINT + "rest/execution/find?courseExecutionId=" +
+                    courseExecutionId, CourseExecutionDto.class);
             logger.info("CourseExecutionDto: {}", courseExecutionDto);
             return courseExecutionDto;
         } catch (HttpClientErrorException e) {
@@ -32,15 +32,10 @@ public class CourseExecutionInterface implements CourseExecutionContract{
 
     @Override
     public Integer getDemoCourseExecutionId() {
-        return null;
-    }
-
-    public Integer findDemoCourseExecution() {
         logger.info("findDemoCourseExecution");
         RestTemplate restTemplate = new RestTemplate();
         try {
-            Integer demoCourseExecutionId = restTemplate.postForObject(ENDPOINT + "rest/execution/demo",
-                    null, Integer.class);
+            Integer demoCourseExecutionId = restTemplate.getForObject(ENDPOINT + "rest/execution/demo", Integer.class);
             logger.info("findDemoCourseExecution: {}", demoCourseExecutionId);
             return demoCourseExecutionId;
         } catch (HttpClientErrorException e) {

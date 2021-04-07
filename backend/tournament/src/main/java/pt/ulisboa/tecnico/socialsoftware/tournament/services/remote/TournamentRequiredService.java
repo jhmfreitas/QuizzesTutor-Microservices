@@ -70,7 +70,7 @@ public class TournamentRequiredService {
     }
 
     public Integer getDemoCourseExecutionId() {
-        return courseExecutionInterface.findDemoCourseExecution();
+        return courseExecutionInterface.getDemoCourseExecutionId();
     }
 
     public Set<TournamentTopic> getTournamentTopics(TopicListDto topicsList) {
@@ -86,7 +86,7 @@ public class TournamentRequiredService {
     }
 
     public Integer createQuiz(Integer creatorId, Integer courseExecutionId, ExternalStatementCreationDto quizDetails) {
-        return quizInterface.generateQuizAndGetId(creatorId, courseExecutionId, quizDetails);
+        return answerInterface.generateQuizAndGetId(creatorId, courseExecutionId, quizDetails);
     }
 
     public StatementQuizDto startTournamentQuiz(Integer userId, Integer quizId) {

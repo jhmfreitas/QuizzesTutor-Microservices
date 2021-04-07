@@ -17,8 +17,7 @@ public class UserInterface implements UserContract{
         logger.info("findUser id:{}", userId);
         RestTemplate restTemplate = new RestTemplate();
         try {
-            UserDto userDto = restTemplate.postForObject(ENDPOINT + "rest/users/find?userId=" + userId,
-                    null, UserDto.class);
+            UserDto userDto = restTemplate.getForObject(ENDPOINT + "rest/users/find?userId=" + userId, UserDto.class);
             logger.info("UserDto: {}", userDto);
             return userDto;
         } catch (HttpClientErrorException e) {
