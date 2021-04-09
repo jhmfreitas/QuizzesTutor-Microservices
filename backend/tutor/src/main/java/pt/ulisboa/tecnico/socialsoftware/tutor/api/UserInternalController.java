@@ -5,10 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import pt.ulisboa.tecnico.socialsoftware.common.dtos.user.UserDto;
 
 @RestController
@@ -19,7 +16,11 @@ public class UserInternalController {
     @Autowired
     MonolithService monolithService;
 
-    @RequestMapping(value = "/find", method = RequestMethod.GET)
+    public UserInternalController(MonolithService monolithService) {
+        this.monolithService = monolithService;
+    }
+
+    @RequestMapping(value = "/find", method=RequestMethod.GET, consumes="application/json", produces="application/json")
     public ResponseEntity<UserDto> findUser(@RequestParam Integer userId) {
         logger.info("findUserById id:{}", userId);
         try {

@@ -4,7 +4,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.context.TestConfiguration
 import pt.ulisboa.tecnico.socialsoftware.common.exceptions.TutorException
 import pt.ulisboa.tecnico.socialsoftware.tournament.BeanConfiguration
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question
 
 import static pt.ulisboa.tecnico.socialsoftware.common.exceptions.ErrorMessage.*
 
@@ -18,12 +17,12 @@ class JoinTournamentTest extends TournamentTest {
 
         privateTournamentDto = createPrivateTournament(creator1, STRING_DATE_TODAY, STRING_DATE_LATER, NUMBER_OF_QUESTIONS, false, '123')
 
-        createMultipleChoiceQuestion(LOCAL_DATE_TODAY, QUESTION_1_CONTENT, QUESTION_1_TITLE, Question.Status.AVAILABLE, externalCourse)
+        //createMultipleChoiceQuestion(LOCAL_DATE_TODAY, QUESTION_1_CONTENT, QUESTION_1_TITLE, Question.Status.AVAILABLE, externalCourse)
     }
 
     def "1 student join an open tournament and get participants" () {
         when:
-        tournamentService.joinTournament(user1.getId(), tournamentDto.getId(), "")
+        tournamentService.joinTournament(studentDto.getId(), tournamentDto.getId(), "")
 
         then: "the students have joined the tournament"
         def result = tournamentRepository.findById(tournamentDto.getId()).orElse(null)
@@ -38,7 +37,7 @@ class JoinTournamentTest extends TournamentTest {
         def canceledTournamentDto = createTournament(creator1, STRING_DATE_TODAY, STRING_DATE_LATER, NUMBER_OF_QUESTIONS, true)
 
         when:
-        tournamentService.joinTournament(user1.getId(), canceledTournamentDto.getId(), "")
+        tournamentService.joinTournament(studentDto.getId(), canceledTournamentDto.getId(), "")
 
         then: "student cannot join"
         def exception = thrown(TutorException)
@@ -53,7 +52,7 @@ class JoinTournamentTest extends TournamentTest {
         def notOpenTournamentDto = createTournament(creator1, STRING_DATE_TODAY, STRING_DATE_TODAY, NUMBER_OF_QUESTIONS, false)
 
         when:
-        tournamentService.joinTournament(user1.getId(), notOpenTournamentDto.getId(), "")
+        tournamentService.joinTournament(studentDto.getId(), notOpenTournamentDto.getId(), "")
 
         then: "student cannot join"
         def exception = thrown(TutorException)
@@ -68,7 +67,7 @@ class JoinTournamentTest extends TournamentTest {
         tournamentRepository.findById(tournamentDto.getId()).orElse(null).addParticipant(participant1, "")
 
         when:
-        tournamentService.joinTournament(user1.getId(), tournamentDto.getId(), "")
+        tournamentService.joinTournament(studentDto.getId(), tournamentDto.getId(), "")
 
         then: "student cannot join"
         def exception = thrown(TutorException)
@@ -98,7 +97,7 @@ class JoinTournamentTest extends TournamentTest {
 
     def "student joins an open and private tournament with correct password" () {
         when:
-        tournamentService.joinTournament(user1.getId(), privateTournamentDto.getId(), "123")
+        tournamentService.joinTournament(studentDto.getId(), privateTournamentDto.getId(), "123")
 
         then: "the student have joined the tournament"
         def result = tournamentRepository.findById(privateTournamentDto.getId()).orElse(null)
@@ -110,7 +109,7 @@ class JoinTournamentTest extends TournamentTest {
 
     def "student joins an open and private tournament with wrong password" () {
         when:
-        tournamentService.joinTournament(user1.getId(), privateTournamentDto.getId(), "Not 123")
+        tournamentService.joinTournament(studentDto.getId(), privateTournamentDto.getId(), "Not 123")
 
         then: "receives exception"
         def exception = thrown(TutorException)

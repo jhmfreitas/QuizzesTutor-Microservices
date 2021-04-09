@@ -2,33 +2,28 @@ package pt.ulisboa.tecnico.socialsoftware.tournament.service
 
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.context.TestConfiguration
-import pt.ulisboa.tecnico.socialsoftware.common.dtos.course.CourseType
-import pt.ulisboa.tecnico.socialsoftware.common.dtos.question.TopicDto
+import pt.ulisboa.tecnico.socialsoftware.common.dtos.tournament.TopicWithCourseDto
 import pt.ulisboa.tecnico.socialsoftware.common.dtos.tournament.TournamentDto
 import pt.ulisboa.tecnico.socialsoftware.common.exceptions.TutorException
+import pt.ulisboa.tecnico.socialsoftware.common.utils.DateHandler
 import pt.ulisboa.tecnico.socialsoftware.tournament.BeanConfiguration
 import pt.ulisboa.tecnico.socialsoftware.tournament.domain.TournamentTopic
-import pt.ulisboa.tecnico.socialsoftware.tutor.execution.domain.Assessment
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Course
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Topic
-import pt.ulisboa.tecnico.socialsoftware.common.utils.DateHandler
 
 import static pt.ulisboa.tecnico.socialsoftware.common.exceptions.ErrorMessage.TOURNAMENT_IS_OPEN
 import static pt.ulisboa.tecnico.socialsoftware.common.exceptions.ErrorMessage.TOURNAMENT_TOPIC_COURSE
 
 @DataJpaTest
 class UpdateTournamentTest extends TournamentTest {
-    def topic3
+    def topicDto3
     def tournamentDto
     def tournamentTopic3
 
     def setup() {
-        def topicDto3 = new TopicDto()
+        topicDto3 = new TopicWithCourseDto()
+        topicDto3.setId(3)
         topicDto3.setName(TOPIC_3_NAME)
-        topic3 = new Topic(externalCourse, topicDto3)
-        topicRepository.save(topic3)
-        tournamentTopic3 = new TournamentTopic(topic3.getId(), topic3.getName(), topic3.getCourse().getId())
+        topicDto3.setCourseId(1)
+        tournamentTopic3 = new TournamentTopic(topicDto3.getId(), topicDto3.getName(), topicDto3.getCourseId())
 
         tournamentDto = new TournamentDto()
         tournamentDto.setStartTime(STRING_DATE_TOMORROW)
@@ -36,11 +31,11 @@ class UpdateTournamentTest extends TournamentTest {
         tournamentDto.setNumberOfQuestions(NUMBER_OF_QUESTIONS)
         tournamentDto.setCanceled(false)
 
-        createAssessmentWithTopicConjunction(ASSESSMENT_1_TITLE, Assessment.Status.AVAILABLE, externalCourseExecution)
+        /*reateAssessmentWithTopicConjunction(ASSESSMENT_1_TITLE, Assessment.Status.AVAILABLE, externalCourseExecution)
 
         def question1 = createMultipleChoiceQuestion(LOCAL_DATE_TODAY, QUESTION_1_CONTENT, QUESTION_1_TITLE, Question.Status.AVAILABLE, externalCourse)
 
-        createOption(OPTION_1_CONTENT, question1)
+        createOption(OPTION_1_CONTENT, question1)*/
     }
 
     def "user that created tournament changes start time"() {
@@ -95,7 +90,7 @@ class UpdateTournamentTest extends TournamentTest {
         given: "a tournament"
         tournamentDto = tournamentService.createTournament(creator1.getId(), externalCourseExecution.getId(), topics, tournamentDto)
         and: "a new topics list"
-        topics.add(topic3.getId())
+        topics.add(topicDto3.getId())
 
         when:
         tournamentService.updateTournament(topics, tournamentDto)
@@ -109,12 +104,14 @@ class UpdateTournamentTest extends TournamentTest {
     def "user that created tournament adds topic of different course"() {
         given: "a tournament"
         tournamentDto = tournamentService.createTournament(creator1.getId(), externalCourseExecution.getId(), topics, tournamentDto)
-        and: "new course"
-        def differentCourse = new Course(COURSE_2_NAME, CourseType.TECNICO)
-        courseRepository.save(differentCourse)
         and: "a new topics list"
-        topic3.setCourse(differentCourse)
-        topics.add(topic3.getId())
+        tournamentTopic3
+        def topicDto4 = new TopicWithCourseDto()
+        topicDto4.setId(4)
+        topicDto4.setName(TOPIC_3_NAME)
+        and: "with a different course"
+        topicDto3.setCourseId(2)
+        topics.add(topicDto4.getId())
 
         when:
         tournamentService.updateTournament(topics, tournamentDto)
@@ -131,7 +128,7 @@ class UpdateTournamentTest extends TournamentTest {
         given: "a tournament"
         tournamentDto = tournamentService.createTournament(creator1.getId(), externalCourseExecution.getId(), topics, tournamentDto)
         and: "a new topics list"
-        topics.remove(topic2.getId())
+        topics.remove(topicDto2.getId())
 
         when:
         tournamentService.updateTournament(topics, tournamentDto)

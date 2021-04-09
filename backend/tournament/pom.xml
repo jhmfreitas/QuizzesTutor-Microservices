@@ -7,23 +7,98 @@
     <artifactId>backend</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
+  <repositories>
+    <repository>
+      <id>maven-central-repository</id>
+      <name>maven-central</name>
+      <url>https://repo1.maven.org/maven2/</url>
+    </repository>
+    <repository>
+      <id>central</id>
+      <name>bintray</name>
+      <url>https://jcenter.bintray.com</url>
+    </repository>
+  </repositories>
+
   <groupId>pt.ulisboa.tecnico.socialsoftware.tournament</groupId>
   <artifactId>tournament</artifactId>
   <name>tournament</name>
   <url>http://maven.apache.org</url>
   <packaging>jar</packaging>
-  <!--<dependencies>
-    <dependency>
-      <groupId>pt.ulisboa.tecnico.socialsoftware.tutor</groupId>
-      <artifactId>tutor</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-  </dependencies>-->
+
+  <properties>
+    <eventuateClientVersion>0.23.0.RELEASE</eventuateClientVersion>
+    <eventuateTramVersion>0.24.0.RELEASE</eventuateTramVersion>
+    <eventuateTramSagaOrchestrationVersion>0.15.2.RELEASE</eventuateTramSagaOrchestrationVersion>
+    <eventuateTramSagaDslVersion>0.15.2.RELEASE</eventuateTramSagaDslVersion>
+    <eventuateTramSagaParticipantVersion>0.15.2.RELEASE</eventuateTramSagaParticipantVersion>
+    <spring-cloud-starter-contract-stub-runner.version>3.0.2</spring-cloud-starter-contract-stub-runner.version>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>pt.ulisboa.tecnico.socialsoftware.common</groupId>
       <artifactId>common</artifactId>
       <version>${project.version}</version>
+    </dependency>
+
+    <!-- Eventuate -->
+    <dependency>
+      <groupId>io.eventuate.tram.core</groupId>
+      <artifactId>eventuate-tram-spring-messaging</artifactId>
+      <version>${eventuateTramVersion} </version>
+    </dependency>
+    <dependency>
+      <groupId>io.eventuate.tram.core</groupId>
+      <artifactId>eventuate-tram-spring-commands</artifactId>
+      <version>${eventuateTramVersion} </version>
+    </dependency>
+    <dependency>
+      <groupId>io.eventuate.tram.core</groupId>
+      <artifactId>eventuate-tram-spring-events</artifactId>
+      <version>${eventuateTramVersion} </version>
+    </dependency>
+    <dependency>
+      <groupId>io.eventuate.client.java</groupId>
+      <artifactId>eventuate-client-java-spring</artifactId>
+      <version>${eventuateClientVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.eventuate.tram.sagas</groupId>
+      <artifactId>eventuate-tram-sagas-orchestration</artifactId>
+      <version>${eventuateTramSagaOrchestrationVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.eventuate.tram.sagas</groupId>
+      <artifactId>eventuate-tram-sagas-orchestration-simple-dsl</artifactId>
+      <version>${eventuateTramSagaDslVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.eventuate.tram.sagas</groupId>
+      <artifactId>eventuate-tram-sagas-participant</artifactId>
+      <version>${eventuateTramSagaParticipantVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.eventuate.tram.sagas</groupId>
+      <artifactId>eventuate-tram-sagas-spring-participant</artifactId>
+      <version>0.15.2.RELEASE</version>
+    </dependency>
+    <dependency>
+      <groupId>io.eventuate.tram.sagas</groupId>
+      <artifactId>eventuate-tram-sagas-spring-common</artifactId>
+      <version>0.15.2.RELEASE</version>
+    </dependency>
+    <dependency>
+      <groupId>io.eventuate.tram.core</groupId>
+      <artifactId>eventuate-tram-jdbc</artifactId>
+      <version>0.21.3.RELEASE</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.cloud</groupId>
+      <artifactId>spring-cloud-starter-contract-stub-runner</artifactId>
+      <version>${spring-cloud-starter-contract-stub-runner.version}</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>

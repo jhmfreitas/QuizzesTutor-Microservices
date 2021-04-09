@@ -22,6 +22,12 @@ public class Tournament  {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @Version
+    private Long version;
+
+    @Enumerated(EnumType.STRING)
+    private TournamentState state;
+
     @Column(name = "start_time")
     private LocalDateTime startTime;
 
@@ -298,9 +304,9 @@ public class Tournament  {
         dto.setNumberOfQuestions(getNumberOfQuestions());
         dto.setCanceled(isCanceled());
         dto.setTopicsDto(getTopics().stream()
-                .map(TournamentTopic::getDto)
+                .map(TournamentTopic::getTopicDto)
                 .collect(Collectors.toSet()));
-        dto.setCreator(getCreator().getDto());
+        dto.setCreator(getCreator().getStudentDto());
         dto.setParticipants(getParticipants().stream()
                 .map(TournamentParticipant::getDto)
                 .sorted(Comparator.comparing(TournamentParticipantDto::getScore).reversed())

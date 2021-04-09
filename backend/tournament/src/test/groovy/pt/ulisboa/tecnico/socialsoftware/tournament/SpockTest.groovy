@@ -3,21 +3,10 @@ package pt.ulisboa.tecnico.socialsoftware.tournament
 import groovyx.net.http.RESTClient
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
-import pt.ulisboa.tecnico.socialsoftware.common.dtos.course.CourseType
 import pt.ulisboa.tecnico.socialsoftware.common.dtos.question.Languages
+import pt.ulisboa.tecnico.socialsoftware.common.utils.DateHandler
 import pt.ulisboa.tecnico.socialsoftware.tournament.repository.TournamentRepository
 import pt.ulisboa.tecnico.socialsoftware.tournament.services.local.TournamentProvidedService
-import pt.ulisboa.tecnico.socialsoftware.tutor.execution.domain.CourseExecution
-import pt.ulisboa.tecnico.socialsoftware.tutor.execution.repository.AssessmentRepository
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Course
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.CourseRepository
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.QuestionRepository
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.TopicRepository
-import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.repository.CourseExecutionRepository
-import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.repository.QuizRepository
-import pt.ulisboa.tecnico.socialsoftware.tutor.user.repository.UserRepository
-import pt.ulisboa.tecnico.socialsoftware.common.utils.DateHandler
-import spock.lang.Shared
 import spock.lang.Specification
 
 import java.time.LocalDateTime
@@ -44,6 +33,7 @@ class SpockTest extends Specification {
     public final static String USER_2_PASSWORD = "4321"
     public static final String USER_1_TOKEN = "1a2b3c"
     public static final String USER_2_TOKEN = "c3b2a1"
+    public static final Integer USER_ID_NOT_USED = 20
 
     public static final String ASSESSMENT_1_TITLE = "Assessment 1 Title"
     public static final String ASSESSMENT_2_TITLE = "Assessment 2 Title"
@@ -103,23 +93,7 @@ class SpockTest extends Specification {
 
     public static final int NUMBER_OF_QUESTIONS = 1
 
-    @Autowired
-    AssessmentRepository assessmentRepository
-
-    @Autowired
-    CourseExecutionRepository courseExecutionRepository
-
-    @Autowired
-    CourseRepository courseRepository
-
-    @Autowired
-    QuestionRepository questionRepository
-
-    @Autowired
-    QuizRepository quizRepository
-
-    @Autowired
-    TopicRepository topicRepository
+    public static final int EXTERNAL_COURSE_EXECUTION_ID_1 = 1
 
     @Autowired
     TournamentRepository tournamentRepository
@@ -127,14 +101,7 @@ class SpockTest extends Specification {
     @Autowired
     TournamentProvidedService tournamentService
 
-    @Autowired
-    UserRepository userRepository
-
-    Course externalCourse
-    @Shared
-    CourseExecution externalCourseExecution
-
-    def createExternalCourseAndExecution() {
+    /*def createExternalCourseAndExecution() {
         externalCourse = new Course(COURSE_1_NAME, CourseType.TECNICO)
         courseRepository.save(externalCourse)
 
@@ -152,7 +119,7 @@ class SpockTest extends Specification {
             courseExecutionRepository.deleteById(ce.getId())
             courseRepository.deleteById(c.getId())
         }
-    }
+    }*/
 
     RESTClient restClient
 

@@ -7,6 +7,11 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.PropertySource
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
+import pt.ulisboa.tecnico.socialsoftware.common.remote.AnswerInterface
+import pt.ulisboa.tecnico.socialsoftware.common.remote.CourseExecutionInterface
+import pt.ulisboa.tecnico.socialsoftware.common.remote.QuestionInterface
+import pt.ulisboa.tecnico.socialsoftware.common.remote.QuizInterface
+import pt.ulisboa.tecnico.socialsoftware.common.remote.UserInterface
 import pt.ulisboa.tecnico.socialsoftware.tournament.services.local.TournamentProvidedService
 import pt.ulisboa.tecnico.socialsoftware.tournament.services.remote.TournamentRequiredService
 
@@ -57,4 +62,30 @@ class BeanConfiguration {
     EventBus eventBus() {
         return new EventBus()
     }
+
+    @Bean
+    UserInterface userInterface() {
+        return new UserInterface()
+    }
+
+    @Bean
+    AnswerInterface answerInterface() {
+        return new AnswerInterface()
+    }
+
+    @Bean
+    CourseExecutionInterface courseExecutionInterface() {
+        return new CourseExecutionInterface()
+    }
+
+    @Bean
+    QuizInterface quizInterface() {
+        return new QuizInterface()
+    }
+
+    @Bean
+    QuestionInterface questionInterface() {
+        return new QuestionInterface()
+    }
+
 }

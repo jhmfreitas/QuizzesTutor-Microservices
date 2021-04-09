@@ -2,59 +2,55 @@ package pt.ulisboa.tecnico.socialsoftware.tournament.service
 
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.context.TestConfiguration
+import pt.ulisboa.tecnico.socialsoftware.common.dtos.execution.CourseExecutionDto
 import pt.ulisboa.tecnico.socialsoftware.common.dtos.execution.CourseExecutionStatus
-import pt.ulisboa.tecnico.socialsoftware.common.dtos.question.OptionDto
-import pt.ulisboa.tecnico.socialsoftware.common.dtos.question.TopicDto
+import pt.ulisboa.tecnico.socialsoftware.common.dtos.tournament.TopicWithCourseDto
+import pt.ulisboa.tecnico.socialsoftware.common.dtos.user.StudentDto
+import pt.ulisboa.tecnico.socialsoftware.common.dtos.user.UserDto
+import pt.ulisboa.tecnico.socialsoftware.common.utils.DateHandler
 import pt.ulisboa.tecnico.socialsoftware.tournament.BeanConfiguration
 import pt.ulisboa.tecnico.socialsoftware.tournament.SpockTest
 import pt.ulisboa.tecnico.socialsoftware.tournament.domain.*
-import pt.ulisboa.tecnico.socialsoftware.tutor.auth.domain.AuthUser
-import pt.ulisboa.tecnico.socialsoftware.tutor.execution.domain.Assessment
-import pt.ulisboa.tecnico.socialsoftware.tutor.execution.domain.CourseExecution
-import pt.ulisboa.tecnico.socialsoftware.tutor.execution.domain.TopicConjunction
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Course
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.MultipleChoiceQuestion
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Topic
-import pt.ulisboa.tecnico.socialsoftware.tutor.user.domain.User
-import pt.ulisboa.tecnico.socialsoftware.common.utils.DateHandler
-
-import java.time.LocalDateTime
 
 @DataJpaTest
 class TournamentTest extends SpockTest {
     public static String STRING_DATE_TODAY = DateHandler.toISOString(DateHandler.now())
 
     def assessment
-    def topic1
-    def topic2
     def tournamentTopic1
     def tournamentTopic2
     def topics = new HashSet<Integer>()
     def topicsList = new HashSet<TournamentTopic>()
-    def user1
+    def studentDto
     def creator1
     def tournamentExternalCourseExecution
     def participant1
+    def courseExecutionDto
+    def topicDto1
+    def topicDto2
 
     def setup() {
-        createExternalCourseAndExecution()
+        //createExternalCourseAndExecution()
 
-        user1 = createUser(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, User.Role.STUDENT, externalCourseExecution)
-        creator1 = createTournamentCreator(user1)
-        participant1 = createTournamentParticipant(user1)
+        studentDto = new StudentDto()
+        studentDto.setId(1)
+        studentDto.setName(USER_1_NAME)
+        studentDto.setUsername(USER_1_USERNAME)
+        //user1 = createUser(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, User.Role.STUDENT, externalCourseExecution)
+        creator1 = createTournamentCreator(studentDto)
+        participant1 = createTournamentParticipant(studentDto)
 
-        def topicDto1 = new TopicDto()
+        topicDto1 = new TopicWithCourseDto()
+        topicDto1.setId(1)
         topicDto1.setName(TOPIC_1_NAME)
-        topic1 = new Topic(externalCourse, topicDto1)
-        topicRepository.save(topic1)
-        tournamentTopic1 = createTournamentTopic(topic1)
+        topicDto1.setCourseId(1)
+        tournamentTopic1 = createTournamentTopic(topicDto1)
 
-        def topicDto2 = new TopicDto()
+        topicDto2 = new TopicWithCourseDto()
+        topicDto2.setId(2)
         topicDto2.setName(TOPIC_2_NAME)
-        topic2 = new Topic(externalCourse, topicDto2)
-        topicRepository.save(topic2)
-        tournamentTopic2 = createTournamentTopic(topic2)
+        topicDto2.setCourseId(1)
+        tournamentTopic2 = createTournamentTopic(topicDto2)
 
         topics.add(tournamentTopic1.getId())
         topics.add(tournamentTopic2.getId())
@@ -64,15 +60,12 @@ class TournamentTest extends SpockTest {
 
         STRING_DATE_TODAY = DateHandler.toISOString(DateHandler.now())
 
-        tournamentExternalCourseExecution = createTournamentCourseExecution(externalCourseExecution)
-    }
-
-    def createUser(String name, String username, String email, User.Role role, CourseExecution courseExecution) {
-        def user = new User(name, username, email, role, false, AuthUser.Type.EXTERNAL)
-        user.addCourse(courseExecution)
-        userRepository.save(user)
-
-        return user
+        courseExecutionDto = new CourseExecutionDto()
+        courseExecutionDto.setCourseId(1)
+        courseExecutionDto.setName(COURSE_1_NAME)
+        courseExecutionDto.setStatus(CourseExecutionStatus.ACTIVE)
+        courseExecutionDto.setAcronym(COURSE_1_ACRONYM)
+        tournamentExternalCourseExecution = createTournamentCourseExecution(1, courseExecutionDto)
     }
 
     def createTournament(TournamentCreator creator, String startTime, String endTime, Integer numberOfQuestions, boolean isCanceled) {
@@ -107,7 +100,7 @@ class TournamentTest extends SpockTest {
         return tournament.getDto()
     }
 
-    def createAssessmentWithTopicConjunction(String title, Assessment.Status status, CourseExecution courseExecution) {
+    /*def createAssessmentWithTopicConjunction(String title, Assessment.Status status, CourseExecution courseExecution) {
         assessment = new Assessment()
         assessment.setTitle(title)
         assessment.setStatus(status)
@@ -149,25 +142,25 @@ class TournamentTest extends SpockTest {
         options.add(optionDto)
         question.getQuestionDetails().setOptions(options)
         questionRepository.save(question)
+    }*/
+
+    def createTournamentCreator(StudentDto studentDto) {
+        return new TournamentCreator(studentDto.getId(), studentDto.getUsername(), studentDto.getName())
     }
 
-    def createTournamentCreator(User user) {
-        return new TournamentCreator(user.getId(), user.getUsername(), user.getName())
+    def createTournamentParticipant(UserDto userDto) {
+        return new TournamentParticipant(userDto.getId(), userDto.getUsername(), userDto.getName())
     }
 
-    def createTournamentTopic(Topic topic) {
-        return new TournamentTopic(topic.getId(), topic.getName(), topic.getCourse().getId())
+    def createTournamentTopic(TopicWithCourseDto topicDto) {
+        return new TournamentTopic(topicDto.getId(), topicDto.getName(), topicDto.getCourseId())
     }
 
-    def createTournamentCourseExecution(CourseExecution courseExecution) {
-        return new TournamentCourseExecution(courseExecution.getId(),
-                courseExecution.getCourse().getId(),
-                CourseExecutionStatus.valueOf(courseExecution.getStatus().toString()),
-                courseExecution.getAcronym())
-    }
-
-    def createTournamentParticipant(User user) {
-        return new TournamentParticipant(user.getId(), user.getUsername(), user.getName())
+    def createTournamentCourseExecution(Integer courseExecutionId, CourseExecutionDto courseExecutionDto) {
+        return new TournamentCourseExecution(courseExecutionId,
+                courseExecutionDto.getCourseId(),
+                CourseExecutionStatus.valueOf(courseExecutionDto.getStatus().toString()),
+                courseExecutionDto.getAcronym())
     }
 
     @TestConfiguration

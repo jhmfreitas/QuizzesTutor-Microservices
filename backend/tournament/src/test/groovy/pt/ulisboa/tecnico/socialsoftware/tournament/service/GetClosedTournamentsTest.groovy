@@ -22,7 +22,7 @@ class GetClosedTournamentsTest extends TournamentTest {
         def tournamentDto = createTournament(creator1, STRING_DATE_TODAY, STRING_DATE_TODAY, NUMBER_OF_QUESTIONS, true)
 
         when:
-        def result = tournamentService.getClosedTournamentsForCourseExecution(externalCourseExecution.getId())
+        def result = tournamentService.getClosedTournamentsForCourseExecution(EXTERNAL_COURSE_EXECUTION_ID_1)
 
         then: "there is no returned data"
         result.size() == 0

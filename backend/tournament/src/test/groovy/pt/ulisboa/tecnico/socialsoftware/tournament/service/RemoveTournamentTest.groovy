@@ -5,8 +5,6 @@ import org.springframework.boot.test.context.TestConfiguration
 import pt.ulisboa.tecnico.socialsoftware.common.dtos.tournament.TournamentDto
 import pt.ulisboa.tecnico.socialsoftware.common.exceptions.TutorException
 import pt.ulisboa.tecnico.socialsoftware.tournament.BeanConfiguration
-import pt.ulisboa.tecnico.socialsoftware.tutor.execution.domain.Assessment
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question
 
 import static pt.ulisboa.tecnico.socialsoftware.common.exceptions.ErrorMessage.QUIZ_HAS_ANSWERS
 import static pt.ulisboa.tecnico.socialsoftware.common.exceptions.ErrorMessage.TOURNAMENT_IS_OPEN
@@ -21,17 +19,17 @@ class RemoveTournamentTest extends TournamentTest {
         tournamentDto.setNumberOfQuestions(NUMBER_OF_QUESTIONS)
         tournamentDto.setCanceled(false)
 
-        createAssessmentWithTopicConjunction(ASSESSMENT_1_TITLE, Assessment.Status.AVAILABLE, externalCourseExecution)
+        /*createAssessmentWithTopicConjunction(ASSESSMENT_1_TITLE, Assessment.Status.AVAILABLE, externalCourseExecution)
 
         def question1 = createMultipleChoiceQuestion(LOCAL_DATE_TODAY, QUESTION_1_CONTENT, QUESTION_1_TITLE, Question.Status.AVAILABLE, externalCourse)
 
-        createOption(OPTION_1_CONTENT, question1)
+        createOption(OPTION_1_CONTENT, question1)*/
     }
 
     def "user that created tournament removes it"() {
         given:
         tournamentDto.setStartTime(STRING_DATE_TOMORROW)
-        tournamentDto = tournamentService.createTournament(creator1.getId(), externalCourseExecution.getId(), topics, tournamentDto)
+        tournamentDto = tournamentService.createTournament(creator1.getId(), EXTERNAL_COURSE_EXECUTION_ID_1, topics, tournamentDto)
 
         when:
         tournamentService.removeTournament(tournamentDto.getId())

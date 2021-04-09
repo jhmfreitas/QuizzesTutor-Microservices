@@ -2,10 +2,8 @@ package pt.ulisboa.tecnico.socialsoftware.tournament.service
 
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.context.TestConfiguration
+import pt.ulisboa.tecnico.socialsoftware.common.dtos.user.StudentDto
 import pt.ulisboa.tecnico.socialsoftware.tournament.BeanConfiguration
-import pt.ulisboa.tecnico.socialsoftware.tutor.execution.domain.Assessment
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question
-import pt.ulisboa.tecnico.socialsoftware.tutor.user.domain.User
 
 @DataJpaTest
 class SolveQuizTournamentTest extends TournamentTest {
@@ -14,9 +12,9 @@ class SolveQuizTournamentTest extends TournamentTest {
     def setup() {
         tournamentDto = createTournament(creator1, STRING_DATE_TODAY, STRING_DATE_LATER, NUMBER_OF_QUESTIONS, false)
 
-        createAssessmentWithTopicConjunction(ASSESSMENT_1_TITLE, Assessment.Status.AVAILABLE, externalCourseExecution)
+        /*createAssessmentWithTopicConjunction(ASSESSMENT_1_TITLE, Assessment.Status.AVAILABLE, externalCourseExecution)
 
-        createMultipleChoiceQuestion(LOCAL_DATE_TODAY, QUESTION_1_CONTENT, QUESTION_1_TITLE, Question.Status.AVAILABLE, externalCourse)
+        createMultipleChoiceQuestion(LOCAL_DATE_TODAY, QUESTION_1_CONTENT, QUESTION_1_TITLE, Question.Status.AVAILABLE, externalCourse)*/
     }
 
     def "1 student solve a tournament" () {
@@ -32,8 +30,11 @@ class SolveQuizTournamentTest extends TournamentTest {
 
     def "2 student solve a tournament" () {
         given:
-        def user2 = createUser(USER_2_NAME, USER_2_USERNAME, USER_2_EMAIL, User.Role.STUDENT, externalCourseExecution)
-        def participant2 = createTournamentParticipant(user2)
+        def studentDto2 = new StudentDto()
+        studentDto2.setId(2)
+        studentDto2.setName(USER_2_NAME)
+        studentDto2.setUsername(USER_2_USERNAME)
+        def participant2 = createTournamentParticipant(studentDto2)
         and:
         tournamentRepository.findById(tournamentDto.getId()).orElse(null).addParticipant(participant1, "")
         tournamentRepository.findById(tournamentDto.getId()).orElse(null).addParticipant(participant2, "")

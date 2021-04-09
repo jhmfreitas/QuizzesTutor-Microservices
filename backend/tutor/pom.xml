@@ -2,6 +2,7 @@
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
+
   <parent>
     <groupId>pt.ulisboa.tecnico.socialsoftware</groupId>
     <artifactId>backend</artifactId>
@@ -11,12 +12,313 @@
   <artifactId>tutor</artifactId>
   <packaging>jar</packaging>
   <name>tutor</name>
-  <url>http://maven.apache.org</url>
+  <description>Monolith that will be incrementally migrated to microservices</description>
+
+  <properties>
+    <spring-cloud.version>2020.0.3-SNAPSHOT</spring-cloud.version>
+    <spring-cloud-contract.version>3.0.3-SNAPSHOT</spring-cloud-contract.version>
+    <junit-platform.version>1.3.2</junit-platform.version>
+    <groovy.version>2.5.10</groovy.version>
+    <generated-contracts-tests-directory>${project.basedir}/target/generated-test-sources/contracts/pt/ulisboa/tecnico/socialsoftware/tutor/internal</generated-contracts-tests-directory>
+  </properties>
+
+  <!-- Allows multiple properties files-->
+  <profiles>
+    <profile>
+      <id>dev</id>
+      <properties>
+        <activatedProperties>dev</activatedProperties>
+      </properties>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+    </profile>
+    <profile>
+      <id>prod</id>
+      <properties>
+        <activatedProperties>prod</activatedProperties>
+      </properties>
+    </profile>
+    <profile>
+      <id>test</id>
+      <properties>
+        <activatedProperties>test</activatedProperties>
+      </properties>
+    </profile>
+  </profiles>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+      </plugin>
+      <!-- tag::gmavenplus-setup[] -->
+      <plugin>
+        <groupId>org.codehaus.gmavenplus</groupId>
+        <artifactId>gmavenplus-plugin</artifactId>
+        <version>1.12.1</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>compileTests</goal>
+              <goal>addTestSources</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <testSources>
+            <testSource>
+              <directory>${project.basedir}/src/test/groovy</directory>
+              <includes>
+                <include>**/*.groovy</include>
+              </includes>
+            </testSource>
+            <testSource>
+              <directory>
+                ${generated-contracts-tests-directory}
+              </directory>
+              <includes>
+                <include>**/*.groovy</include>
+                <include>**/*.gvy</include>
+              </includes>
+            </testSource>
+          </testSources>
+        </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy-all</artifactId>
+            <version>${groovy.version}</version>
+            <scope>runtime</scope>
+            <type>pom</type>
+          </dependency>
+        </dependencies>
+        <!-- end::gmavenplus-setup[] -->
+      </plugin>
+
+      <!-- remove::start[] -->
+      <!-- SPRING CLOUD CONTRACT -->
+      <!-- tag::test_dep_in_plugin[] -->
+      <plugin>
+        <groupId>org.springframework.cloud</groupId>
+        <artifactId>spring-cloud-contract-maven-plugin</artifactId>
+        <version>${spring-cloud-contract.version}</version>
+        <extensions>true</extensions>
+        <configuration>
+          <testFramework>JUNIT5</testFramework>
+          <baseClassForTests>pt.ulisboa.tecnico.socialsoftware.tutor.internal.TutorServiceRestBase</baseClassForTests>
+          <!--<packageWithBaseClasses>pt.ulisboa.tecnico.socialsoftware.tutor.internal</packageWithBaseClasses>-->
+          <!--<baseClassMappings>
+            <baseClassMapping>
+              <contractPackageRegex>.*apitests.*</contractPackageRegex>
+              <baseClassFQN>pt.ulisboa.tecnico.socialsoftware.tutor.internal.apitests.TutorServiceBase</baseClassFQN>
+            </baseClassMapping>
+          </baseClassMappings>-->
+          <testFramework>SPOCK</testFramework>
+        </configuration>
+      </plugin>
+      <!-- end::test_dep_in_plugin[] -->
+      <!-- remove::end[] -->
+
+      <!-- tag::spock-surefire-setup[] -->
+      <!--<plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <dependencies>
+          <dependency>
+            <groupId>org.junit.vintage</groupId>
+            <artifactId>junit-vintage-engine</artifactId>
+            <version>${junit-jupiter.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>${junit-jupiter.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-surefire-provider</artifactId>
+            <version>${junit-platform.version}</version>
+          </dependency>
+        </dependencies>
+        <configuration>
+          <detail>true</detail>
+          <includes>
+            <include>**/*Test.*</include>
+            <include>**/*Spec.*</include>
+          </includes>
+          <failIfNoTests>true</failIfNoTests>
+        </configuration>
+      </plugin>-->
+      <!-- end::spock-surefire-setup[] -->
+    </plugins>
+  </build>
+
+
   <dependencies>
+    <!-- For compatibility -->
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-engine</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <!-- Stream dependencies -->
+    <dependency>
+      <groupId>org.springframework.cloud</groupId>
+      <artifactId>spring-cloud-starter-stream-rabbit</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.cloud</groupId>
+      <artifactId>spring-cloud-stream</artifactId>
+      <type>test-jar</type>
+      <scope>test</scope>
+      <classifier>test-binder</classifier>
+    </dependency>
+    <!-- For JDK 14 -->
+    <dependency>
+      <groupId>javax.inject</groupId>
+      <artifactId>javax.inject</artifactId>
+      <version>1</version>
+      <scope>test</scope>
+    </dependency>
+
     <dependency>
       <groupId>pt.ulisboa.tecnico.socialsoftware.common</groupId>
       <artifactId>common</artifactId>
       <version>${project.version}</version>
     </dependency>
+
+    <!-- spring cloud contract test dependencies -->
+    <dependency>
+      <groupId>org.springframework.cloud</groupId>
+      <artifactId>spring-cloud-starter-contract-verifier</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
+
+  <distributionManagement>
+    <snapshotRepository>
+      <id>snapshots</id>
+      <name>springcloudcontract-snapshots</name>
+      <url>https://springcloudcontract.jfrog.io/springcloudcontract/snapshot</url>
+    </snapshotRepository>
+  </distributionManagement>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.springframework.cloud</groupId>
+        <artifactId>spring-cloud-dependencies</artifactId>
+        <version>${spring-cloud.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+ <!-- <profiles>
+    <profile>
+      <id>gmaven-test-compilation</id>
+      <activation>
+        <property>
+          <name>env.SKIP_TESTS</name>
+          <value>false</value>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <version>3.0.0</version>
+            <executions>
+              <execution>
+                <id>assert-contract-tests-executed</id>
+                <phase>prepare-package</phase>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+                <configuration>
+                  <target>
+                    <fileset id="contract.test.files" dir="target/surefire-reports/"
+                             includes="**/*.IntoxicationSpec.txt,**/*.MessagingSpec.txt,**/*.RestSpec.txt">
+                    </fileset>
+                    <fail message="All contract tests were not executed.">
+                      <condition>
+                        <resourcecount when="ne" count="3" refid="contract.test.files"/>
+                      </condition>
+                    </fail>
+                  </target>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>-->
+
+  <repositories>
+    <repository>
+      <id>spring-snapshots</id>
+      <name>Spring Snapshots</name>
+      <url>https://repo.spring.io/snapshot</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>spring-milestones</id>
+      <name>Spring Milestones</name>
+      <url>https://repo.spring.io/milestone</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>spring-releases</id>
+      <name>Spring Releases</name>
+      <url>https://repo.spring.io/release</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+  <pluginRepositories>
+    <pluginRepository>
+      <id>spring-snapshots</id>
+      <name>Spring Snapshots</name>
+      <url>https://repo.spring.io/snapshot</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </pluginRepository>
+    <pluginRepository>
+      <id>spring-milestones</id>
+      <name>Spring Milestones</name>
+      <url>https://repo.spring.io/milestone</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </pluginRepository>
+    <pluginRepository>
+      <id>spring-plugin-snapshots</id>
+      <name>Spring Snapshots</name>
+      <url>https://repo.spring.io/snapshot</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </pluginRepository>
+    <pluginRepository>
+      <id>spring-plugin-milestones</id>
+      <name>Spring Milestones</name>
+      <url>https://repo.spring.io/release</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </pluginRepository>
+  </pluginRepositories>
+
 </project>

@@ -2,14 +2,11 @@ package pt.ulisboa.tecnico.socialsoftware.tournament.service
 
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.context.TestConfiguration
-import pt.ulisboa.tecnico.socialsoftware.common.dtos.course.CourseType
-import pt.ulisboa.tecnico.socialsoftware.common.dtos.question.TopicDto
+import pt.ulisboa.tecnico.socialsoftware.common.dtos.tournament.TopicWithCourseDto
 import pt.ulisboa.tecnico.socialsoftware.common.dtos.tournament.TournamentDto
 import pt.ulisboa.tecnico.socialsoftware.common.exceptions.TutorException
-import pt.ulisboa.tecnico.socialsoftware.tournament.BeanConfiguration
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Course
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Topic
 import pt.ulisboa.tecnico.socialsoftware.common.utils.DateHandler
+import pt.ulisboa.tecnico.socialsoftware.tournament.BeanConfiguration
 import spock.lang.Unroll
 
 import static pt.ulisboa.tecnico.socialsoftware.common.exceptions.ErrorMessage.*
@@ -148,15 +145,13 @@ class CreateTournamentTest extends TournamentTest {
         tournamentDto.setEndTime(STRING_DATE_LATER)
         tournamentDto.setNumberOfQuestions(NUMBER_OF_QUESTIONS)
         tournamentDto.setCanceled(false)
-        and: "new course"
-        def differentCourse = new Course(COURSE_2_NAME, CourseType.TECNICO)
-        courseRepository.save(differentCourse)
         and: "new topic"
-        def topicDto3 = new TopicDto()
+        def topicDto3 = new TopicWithCourseDto()
+        topicDto3.setId(3)
         topicDto3.setName("TOPIC3")
-        def topic3 = new Topic(differentCourse, topicDto3)
-        topicRepository.save(topic3)
-        topics.add(topic3.getId())
+        and: "with new course"
+        topicDto3.setCourseId(2)
+        topics.add(topicDto3.getId())
 
         when:
         tournamentService.createTournament(creator1.getId(), externalCourseExecution.getId(), topics, tournamentDto)
