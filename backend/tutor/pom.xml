@@ -17,6 +17,7 @@
   <properties>
     <spring-cloud.version>2020.0.3-SNAPSHOT</spring-cloud.version>
     <spring-cloud-contract.version>3.0.3-SNAPSHOT</spring-cloud-contract.version>
+    <spring-cloud-starter-contract-verifier.version>2.2.2.RELEASE</spring-cloud-starter-contract-verifier.version>
     <junit-platform.version>1.3.2</junit-platform.version>
     <groovy.version>2.5.10</groovy.version>
     <generated-contracts-tests-directory>${project.basedir}/target/generated-test-sources/contracts/pt/ulisboa/tecnico/socialsoftware/tutor/internal</generated-contracts-tests-directory>
@@ -194,6 +195,7 @@
     <dependency>
       <groupId>org.springframework.cloud</groupId>
       <artifactId>spring-cloud-starter-contract-verifier</artifactId>
+      <version>${spring-cloud-starter-contract-verifier.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

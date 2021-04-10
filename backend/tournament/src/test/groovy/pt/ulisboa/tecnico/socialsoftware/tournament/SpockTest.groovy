@@ -3,6 +3,12 @@ package pt.ulisboa.tecnico.socialsoftware.tournament
 import groovyx.net.http.RESTClient
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
+import org.springframework.cloud.contract.stubrunner.spring.AutoConfigureStubRunner
+import org.springframework.cloud.contract.stubrunner.spring.StubRunnerProperties
+import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.web.servlet.MockMvc
 import pt.ulisboa.tecnico.socialsoftware.common.dtos.question.Languages
 import pt.ulisboa.tecnico.socialsoftware.common.utils.DateHandler
 import pt.ulisboa.tecnico.socialsoftware.tournament.repository.TournamentRepository
@@ -11,6 +17,7 @@ import spock.lang.Specification
 
 import java.time.LocalDateTime
 
+@ActiveProfiles("test")
 class SpockTest extends Specification {
 
     @Value('${spring.mail.username}')
