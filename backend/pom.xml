@@ -43,17 +43,17 @@
         <activatedProperties>prod</activatedProperties>
       </properties>
     </profile>
-    <profile>
+    <!--<profile>
       <id>test</id>
       <properties>
         <activatedProperties>test</activatedProperties>
       </properties>
       <build>
         <plugins>
-          <plugin>
+          <plugin>-->
             <!-- The gmavenplus plugin is used to compile Groovy code. To learn
                             more about this plugin, visit https://github.com/groovy/GMavenPlus/wiki -->
-            <groupId>org.codehaus.gmavenplus</groupId>
+            <!--<groupId>org.codehaus.gmavenplus</groupId>
             <artifactId>gmavenplus-plugin</artifactId>
             <version>1.12.0</version>
             <executions>
@@ -96,7 +96,7 @@
           </plugin>
         </plugins>
       </build>
-    </profile>
+    </profile>-->
     <profile>
       <id>test-int</id>
       <properties>

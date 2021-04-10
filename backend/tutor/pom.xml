@@ -45,7 +45,133 @@
       <properties>
         <activatedProperties>test</activatedProperties>
       </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <!-- The gmavenplus plugin is used to compile Groovy code. To learn
+                            more about this plugin, visit https://github.com/groovy/GMavenPlus/wiki -->
+            <groupId>org.codehaus.gmavenplus</groupId>
+            <artifactId>gmavenplus-plugin</artifactId>
+            <version>1.12.0</version>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>addTestSources</goal>
+                  <goal>compileTests</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <version>3.0.0-M5</version>
+            <configuration>
+              <excludes>
+                <exclude>**/*IT</exclude>
+                <exclude>**/*Spec.*</exclude>
+              </excludes>
+            </configuration>
+          </plugin>
+          <plugin>
+            <groupId>org.jacoco</groupId>
+            <artifactId>jacoco-maven-plugin</artifactId>
+            <version>0.8.6</version>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>prepare-agent</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>report</id>
+                <phase>test</phase>
+                <goals>
+                  <goal>report</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
     </profile>
+    <profile>
+      <id>apitest</id>
+      <properties>
+        <activatedProperties>test</activatedProperties>
+      </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <dependencies>
+              <dependency>
+                <groupId>org.junit.vintage</groupId>
+                <artifactId>junit-vintage-engine</artifactId>
+                <version>${junit-jupiter.version}</version>
+              </dependency>
+              <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-engine</artifactId>
+                <version>${junit-jupiter.version}</version>
+              </dependency>
+              <dependency>
+                <groupId>org.junit.platform</groupId>
+                <artifactId>junit-platform-surefire-provider</artifactId>
+                <version>${junit-platform.version}</version>
+              </dependency>
+            </dependencies>
+            <configuration>
+              <detail>true</detail>
+              <includes>
+                <include>**/*Spec.*</include>
+              </includes>
+              <failIfNoTests>true</failIfNoTests>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <!--<profile>
+      <id>gmaven-test-compilation</id>
+      <activation>
+        <property>
+          <name>env.SKIP_TESTS</name>
+          <value>false</value>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <version>3.0.0</version>
+            <executions>
+              <execution>
+                <id>assert-contract-tests-executed</id>
+                <phase>prepare-package</phase>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+                <configuration>
+                  <target>
+                    <fileset id="contract.test.files" dir="target/surefire-reports/"
+                             includes="**/*.RestSpec.txt">
+                    </fileset>
+                    <fail message="All contract tests were not executed.">
+                      <condition>
+                        <resourcecount when="ne" count="3" refid="contract.test.files"/>
+                      </condition>
+                    </fail>
+                  </target>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>-->
   </profiles>
 
   <build>
@@ -107,15 +233,7 @@
         <version>${spring-cloud-contract.version}</version>
         <extensions>true</extensions>
         <configuration>
-          <testFramework>JUNIT5</testFramework>
           <baseClassForTests>pt.ulisboa.tecnico.socialsoftware.tutor.internal.TutorServiceRestBase</baseClassForTests>
-          <!--<packageWithBaseClasses>pt.ulisboa.tecnico.socialsoftware.tutor.internal</packageWithBaseClasses>-->
-          <!--<baseClassMappings>
-            <baseClassMapping>
-              <contractPackageRegex>.*apitests.*</contractPackageRegex>
-              <baseClassFQN>pt.ulisboa.tecnico.socialsoftware.tutor.internal.apitests.TutorServiceBase</baseClassFQN>
-            </baseClassMapping>
-          </baseClassMappings>-->
           <testFramework>SPOCK</testFramework>
         </configuration>
       </plugin>
@@ -146,7 +264,6 @@
         <configuration>
           <detail>true</detail>
           <includes>
-            <include>**/*Test.*</include>
             <include>**/*Spec.*</include>
           </includes>
           <failIfNoTests>true</failIfNoTests>
@@ -159,14 +276,14 @@
 
   <dependencies>
     <!-- For compatibility -->
-    <dependency>
+    <!--<dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-engine</artifactId>
       <scope>test</scope>
-    </dependency>
+    </dependency>-->
 
     <!-- Stream dependencies -->
-    <dependency>
+    <!--<dependency>
       <groupId>org.springframework.cloud</groupId>
       <artifactId>spring-cloud-starter-stream-rabbit</artifactId>
     </dependency>
@@ -176,14 +293,14 @@
       <type>test-jar</type>
       <scope>test</scope>
       <classifier>test-binder</classifier>
-    </dependency>
+    </dependency>-->
     <!-- For JDK 14 -->
-    <dependency>
+    <!--<dependency>
       <groupId>javax.inject</groupId>
       <artifactId>javax.inject</artifactId>
       <version>1</version>
       <scope>test</scope>
-    </dependency>
+    </dependency>-->
 
     <dependency>
       <groupId>pt.ulisboa.tecnico.socialsoftware.common</groupId>
@@ -200,13 +317,13 @@
     </dependency>
   </dependencies>
 
-  <distributionManagement>
+  <!--<distributionManagement>
     <snapshotRepository>
       <id>snapshots</id>
       <name>springcloudcontract-snapshots</name>
       <url>https://springcloudcontract.jfrog.io/springcloudcontract/snapshot</url>
     </snapshotRepository>
-  </distributionManagement>
+  </distributionManagement>-->
 
   <dependencyManagement>
     <dependencies>
@@ -219,48 +336,6 @@
       </dependency>
     </dependencies>
   </dependencyManagement>
-
- <!-- <profiles>
-    <profile>
-      <id>gmaven-test-compilation</id>
-      <activation>
-        <property>
-          <name>env.SKIP_TESTS</name>
-          <value>false</value>
-        </property>
-      </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-antrun-plugin</artifactId>
-            <version>3.0.0</version>
-            <executions>
-              <execution>
-                <id>assert-contract-tests-executed</id>
-                <phase>prepare-package</phase>
-                <goals>
-                  <goal>run</goal>
-                </goals>
-                <configuration>
-                  <target>
-                    <fileset id="contract.test.files" dir="target/surefire-reports/"
-                             includes="**/*.IntoxicationSpec.txt,**/*.MessagingSpec.txt,**/*.RestSpec.txt">
-                    </fileset>
-                    <fail message="All contract tests were not executed.">
-                      <condition>
-                        <resourcecount when="ne" count="3" refid="contract.test.files"/>
-                      </condition>
-                    </fail>
-                  </target>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-  </profiles>-->
 
   <repositories>
     <repository>
