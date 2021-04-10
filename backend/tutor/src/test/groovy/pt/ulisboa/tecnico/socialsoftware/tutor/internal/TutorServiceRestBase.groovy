@@ -11,8 +11,12 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Import
 import org.springframework.security.web.FilterChainProxy
+import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.ContextConfiguration
+import org.springframework.test.context.web.WebAppConfiguration
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.WebApplicationContext
+import pt.ulisboa.tecnico.socialsoftware.common.dtos.user.UserDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.api.MonolithService;
 import pt.ulisboa.tecnico.socialsoftware.tutor.api.UserInternalController;
 import spock.lang.Specification;
@@ -20,9 +24,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.*;
 
 @SpringBootTest
-@Import(UserInternalController.class)
+@ContextConfiguration
+@WebAppConfiguration
+@ActiveProfiles("dev")
 abstract class TutorServiceRestBase extends Specification {
 
     @Autowired
@@ -37,6 +44,8 @@ abstract class TutorServiceRestBase extends Specification {
     def setup() {
         RestAssuredMockMvc.webAppContextSetup(webApplicationContext)
 
+        monolithService.findUser(_ as Integer) >> UserDto
+
         EncoderConfig encoderConfig = new EncoderConfig().appendDefaultContentCharsetToContentTypeIfUndefined(false);
         RestAssuredMockMvc.config = new RestAssuredMockMvcConfig().encoderConfig(encoderConfig);
 
@@ -45,7 +54,9 @@ abstract class TutorServiceRestBase extends Specification {
         //RestAssuredMockMvc.mockMvc(mockMvc)
         //EncoderConfig encoderConfig = new EncoderConfig().appendDefaultContentCharsetToContentTypeIfUndefined(false);
         //RestAssuredMockMvc.config = new RestAssuredMockMvcConfig().encoderConfig(encoderConfig);
-        RestAssuredMockMvc.standaloneSetup(userInternalController)
+        MockMvcBuilders.webAppContextSetup(webApplicationContext)
+                .apply(springSecurity())
+                .build();
 
 
         /*RestAssuredMockMvc.standaloneSetup(userInternalController).apply(SecurityMockMvcConfigurers.springSecurity())

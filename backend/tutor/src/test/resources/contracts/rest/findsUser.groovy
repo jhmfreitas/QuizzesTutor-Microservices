@@ -35,8 +35,8 @@ Contract.make {
                 creationDate: "2020-02-03",
                 lastAccess: "2021-02-03"
         )
-        headers {
+        """headers {
             contentType(applicationJson())
-        }
+        }"""
     }
 }

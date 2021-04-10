@@ -1,4 +1,4 @@
-package pt.ulisboa.tecnico.socialsoftware.apigateway.apis;
+package pt.ulisboa.tecnico.socialsoftware.tutor.apis;
 
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
