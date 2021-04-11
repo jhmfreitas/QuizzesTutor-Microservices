@@ -13,6 +13,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import pt.ulisboa.tecnico.socialsoftware.common.utils.CloudContractUtils;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.AnswerService;
 import pt.ulisboa.tecnico.socialsoftware.tutor.auth.JwtTokenProvider;
 import pt.ulisboa.tecnico.socialsoftware.tutor.config.TutorModuleConfiguration;
@@ -47,6 +48,11 @@ public class TutorServiceApplication extends SpringBootServletInitializer implem
     @Bean
     EventBus eventBus() {
         return new EventBus();
+    }
+
+    @Bean
+    CloudContractUtils cloudContractUtils() {
+        return new CloudContractUtils();
     }
 
     @Override

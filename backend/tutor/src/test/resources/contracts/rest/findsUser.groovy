@@ -26,17 +26,17 @@ Contract.make {
     response {
         status 200
         body(
-                id: 1,
-                username: "username",
-                email: "user@test.com",
-                name: "name",
-                role: "Student",
-                active: true,
-                creationDate: "2020-02-03",
-                lastAccess: "2021-02-03"
+                id: $(regex(anInteger())),
+                username: anyNonEmptyString(),
+                email: $(regex(email())),
+                name: anyNonEmptyString(),
+                role: "STUDENT",
+                active: $(regex(anyBoolean())),
+                creationDate: anyNonEmptyString(),
+                lastAccess: anyNonEmptyString()
         )
-        """headers {
+        headers {
             contentType(applicationJson())
-        }"""
+        }
     }
 }

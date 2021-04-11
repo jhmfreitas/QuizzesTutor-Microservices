@@ -12,7 +12,6 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.context.WebApplicationContext
 import pt.ulisboa.tecnico.socialsoftware.common.dtos.user.UserDto
-import pt.ulisboa.tecnico.socialsoftware.tutor.SpockTest
 import pt.ulisboa.tecnico.socialsoftware.tutor.TutorServiceApplication
 import pt.ulisboa.tecnico.socialsoftware.tutor.api.MonolithService
 import pt.ulisboa.tecnico.socialsoftware.tutor.api.UserInternalController
@@ -36,12 +35,12 @@ abstract class TutorServiceRestBase extends Specification {
 
         MockMvcBuilders.webAppContextSetup(this.webApplicationContext)
                 .apply(springSecurity())
-                .build();
+                .build()
     }
 
 
     @Configuration
-    static class Config extends SpockTest {
+    static class Config extends ApiTestBase {
 
         @Bean
         @Primary
@@ -49,9 +48,7 @@ abstract class TutorServiceRestBase extends Specification {
             return new MonolithService() {
                 @Override
                 UserDto findUser(Integer userId) {
-                    UserDto dto = new UserDto()
-                    dto.setName("test")
-                    return dto
+                    return getUserDtoTest()
                 }
             }
         }
@@ -63,6 +60,6 @@ abstract class TutorServiceRestBase extends Specification {
         }
     }
 
-    /*@TestConfiguration
-    static class LocalBeanConfiguration extends BeanConfiguration {}*/
+   /* @TestConfiguration
+    static class LocalBeanConfiguration extends ApiTestBase {}*/
 }

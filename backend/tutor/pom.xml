@@ -107,6 +107,11 @@
             <artifactId>maven-surefire-plugin</artifactId>
             <dependencies>
               <dependency>
+                <groupId>pt.ulisboa.tecnico.socialsoftware.common</groupId>
+                <artifactId>common</artifactId>
+                <version>${project.version}</version>
+              </dependency>
+              <dependency>
                 <groupId>org.junit.vintage</groupId>
                 <artifactId>junit-vintage-engine</artifactId>
                 <version>${junit-jupiter.version}</version>
