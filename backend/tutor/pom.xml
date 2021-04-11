@@ -236,6 +236,16 @@
           <baseClassForTests>pt.ulisboa.tecnico.socialsoftware.tutor.internal.TutorServiceRestBase</baseClassForTests>
           <testFramework>SPOCK</testFramework>
         </configuration>
+        <!--<configuration>
+          <packageWithBaseClasses>pt.ulisboa.tecnico.socialsoftware.tutor.internal</packageWithBaseClasses>
+          <baseClassMappings>
+            <baseClassMapping>
+              <contractPackageRegex>.*rest.*</contractPackageRegex>
+              <baseClassFQN>pt.ulisboa.tecnico.socialsoftware.tutor.internal.TutorServiceRestBase</baseClassFQN>
+            </baseClassMapping>
+          </baseClassMappings>
+          <testFramework>SPOCK</testFramework>
+        </configuration>-->
       </plugin>
       <!-- end::test_dep_in_plugin[] -->
       <!-- remove::end[] -->
@@ -300,6 +310,13 @@
       <artifactId>javax.inject</artifactId>
       <version>1</version>
       <scope>test</scope>
+    </dependency>-->
+
+    <!-- https://stackoverflow.com/questions/36329001/unable-to-create-a-configuration-because-no-bean-validation-provider-could-be-f -->
+    <!--<dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-validator</artifactId>
+      <version>5.2.4.Final</version>
     </dependency>-->
 
     <dependency>

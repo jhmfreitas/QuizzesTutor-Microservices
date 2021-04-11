@@ -30,7 +30,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.demoutils.TutorDemoUtils;
 @EnableTransactionManagement
 @EnableJpaAuditing
 @EnableScheduling
-@Import({TutorModuleConfiguration.class})
+//@Import({TutorModuleConfiguration.class})
 @SpringBootApplication
 public class TutorServiceApplication extends SpringBootServletInitializer implements InitializingBean {
 
