@@ -14,6 +14,7 @@ import pt.ulisboa.tecnico.socialsoftware.common.remote.QuizInterface
 import pt.ulisboa.tecnico.socialsoftware.common.remote.UserInterface
 import pt.ulisboa.tecnico.socialsoftware.tournament.services.local.TournamentProvidedService
 import pt.ulisboa.tecnico.socialsoftware.tournament.services.remote.TournamentRequiredService
+import pt.ulisboa.tecnico.socialsoftware.tournament.services.remote.UserController
 
 @TestConfiguration
 @PropertySource("classpath:application-test.properties")
@@ -86,6 +87,17 @@ class BeanConfiguration {
     @Bean
     QuestionInterface questionInterface() {
         return new QuestionInterface()
+    }
+
+
+    @Bean
+    TournamentRequiredService tournamentRequiredService() {
+        return new TournamentRequiredService()
+    }
+
+    @Bean
+    UserController userController() {
+        return new UserController()
     }
 
 }

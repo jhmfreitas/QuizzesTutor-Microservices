@@ -22,7 +22,7 @@ public class UserInternalController {
 
     @RequestMapping(value = "/find/{userId}", method=RequestMethod.GET, produces="application/json")
     public ResponseEntity<UserDto> findUser(@PathVariable Integer userId) {
-        logger.info("findUserById id:{}", userId);
+        logger.info("findUser id:{}", userId);
         try {
             UserDto result = monolithService.findUser(userId);
             logger.info("Result:{}", result);
