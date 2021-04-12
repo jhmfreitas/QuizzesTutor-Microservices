@@ -41,9 +41,12 @@ public class TournamentRequiredService {
     @Autowired
     private AnswerInterface answerInterface;
 
+    @Autowired
+    private UserController userController;
+
 
     public TournamentCreator getTournamentCreator(Integer userId) {
-        UserDto userDto = userInterface.findUser(userId);
+        UserDto userDto = userController.findUser(userId);
 
         if (userDto != null) {
             return new TournamentCreator(userDto.getId(), userDto.getUsername(), userDto.getName());

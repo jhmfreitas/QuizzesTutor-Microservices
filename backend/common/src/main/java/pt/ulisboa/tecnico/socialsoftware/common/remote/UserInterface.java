@@ -7,19 +7,20 @@ import org.springframework.web.client.RestTemplate;
 import pt.ulisboa.tecnico.socialsoftware.common.dtos.user.UserDto;
 import pt.ulisboa.tecnico.socialsoftware.common.exceptions.RemoteAccessException;
 
-public class UserInterface implements UserContract{
+public class UserInterface implements UserContract {
     private static final Logger logger = LoggerFactory.getLogger(UserInterface.class);
 
     private static final String ENDPOINT = "http://localhost:";
 
-    private static String port = "8080";
+    public final String port = "8080";
 
     @Override
     public UserDto findUser(Integer userId) {
         logger.info("findUser id:{}", userId);
         RestTemplate restTemplate = new RestTemplate();
         try {
-            UserDto userDto = restTemplate.getForObject(ENDPOINT + port + "/rest/users/find?userId=" + userId, UserDto.class);
+            UserDto userDto = restTemplate.getForObject(ENDPOINT + port +
+                    "/rest/users/find/" + userId, UserDto.class);
             logger.info("UserDto: {}", userDto);
             return userDto;
         } catch (HttpClientErrorException e) {

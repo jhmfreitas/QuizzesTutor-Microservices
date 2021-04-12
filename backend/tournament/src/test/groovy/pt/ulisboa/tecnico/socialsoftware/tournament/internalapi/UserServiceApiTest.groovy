@@ -7,7 +7,6 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.cloud.contract.stubrunner.StubFinder
 import org.springframework.cloud.contract.stubrunner.spring.AutoConfigureStubRunner
-import org.springframework.cloud.contract.stubrunner.spring.StubRunnerPort
 import org.springframework.cloud.contract.stubrunner.spring.StubRunnerProperties
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.annotation.DirtiesContext
@@ -22,31 +21,18 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @AutoConfigureMockMvc
 @AutoConfigureJsonTesters
-@AutoConfigureStubRunner(stubsMode = StubRunnerProperties.StubsMode.LOCAL, ids = "pt.ulisboa.tecnico.socialsoftware.tutor:tutor")
+@AutoConfigureStubRunner(stubsMode = StubRunnerProperties.StubsMode.LOCAL, ids = "pt.ulisboa.tecnico.socialsoftware.tutor:tutor:+:stubs:8080")
 @DirtiesContext
 @WithMockUser
 @ActiveProfiles("test")
 class UserServiceApiTest extends AbstractTest {
 
     @Autowired
-    MockMvc mockMvc;
-
-    @Autowired
     UserController userController
-
-    @Autowired
-    StubFinder stubFinder
-
-    @StubRunnerPort("tutor")
-    int producerPort;
-
-    def setup() {
-        this.userController.port = this.producerPort;
-    }
 
     def 'stubs are installed'() {
         when:
-        stubFinder.findStubUrl("pt.ulisboa.tecnico.socialsoftware.tutor", 'tutor')
+        stubFinder.findStubUrl(TUTOR_GROUP_ID, 'tutor')
         then:
         noExceptionThrown()
         and:
