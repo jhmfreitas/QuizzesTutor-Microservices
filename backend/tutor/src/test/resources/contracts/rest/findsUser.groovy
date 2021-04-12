@@ -18,15 +18,15 @@ Contract.make {
     request {
         method 'GET'
         url '/rest/users/find/1'
-        """body(file("request.json"))"""
+        """body(file("request.json"))
         headers {
             contentType(applicationJson())
-        }
+        }"""
     }
     response {
         status 200
         body(
-                id: $(regex(anInteger())),
+                id: $(regex(positiveInt())),
                 username: anyNonEmptyString(),
                 email: $(regex(email())),
                 name: anyNonEmptyString(),

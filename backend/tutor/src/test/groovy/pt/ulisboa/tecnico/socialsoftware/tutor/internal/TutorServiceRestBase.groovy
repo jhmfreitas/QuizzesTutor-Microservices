@@ -60,6 +60,6 @@ abstract class TutorServiceRestBase extends Specification {
         }
     }
 
-   /* @TestConfiguration
-    static class LocalBeanConfiguration extends ApiTestBase {}*/
+    /* @TestConfiguration
+     static class LocalBeanConfiguration extends ApiTestBase {}*/
 }
