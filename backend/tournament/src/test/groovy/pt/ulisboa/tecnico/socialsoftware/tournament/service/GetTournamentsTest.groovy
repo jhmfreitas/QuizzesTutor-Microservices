@@ -11,7 +11,7 @@ class GetTournamentsTest extends TournamentTest {
         def tournamentDto = createTournament(creator1, STRING_DATE_TODAY, STRING_DATE_LATER, NUMBER_OF_QUESTIONS, false)
 
         when:
-        def result = tournamentService.getTournamentsForCourseExecution(externalCourseExecution.getId())
+        def result = tournamentService.getTournamentsForCourseExecution(EXTERNAL_COURSE_EXECUTION_ID_1)
 
         then: "there is no returned data"
         result.size() == 1
@@ -22,7 +22,7 @@ class GetTournamentsTest extends TournamentTest {
         def tournamentDto = createTournament(creator1, STRING_DATE_TODAY, STRING_DATE_LATER, NUMBER_OF_QUESTIONS, true)
 
         when:
-        def result = tournamentService.getTournamentsForCourseExecution(externalCourseExecution.getId())
+        def result = tournamentService.getTournamentsForCourseExecution(EXTERNAL_COURSE_EXECUTION_ID_1)
 
         then: "there is no returned data"
         result.size() == 1
@@ -35,7 +35,7 @@ class GetTournamentsTest extends TournamentTest {
         def tournamentDto2 = createTournament(creator1, STRING_DATE_TODAY, STRING_DATE_LATER, NUMBER_OF_QUESTIONS, false)
 
         when:
-        def result = tournamentService.getTournamentsForCourseExecution(externalCourseExecution.getId())
+        def result = tournamentService.getTournamentsForCourseExecution(EXTERNAL_COURSE_EXECUTION_ID_1)
 
         then: "the returned data is correct"
         result.size() == 2
@@ -51,7 +51,7 @@ class GetTournamentsTest extends TournamentTest {
         def tournamentDto3 = createTournament(creator1, STRING_DATE_TODAY, STRING_DATE_LATER, NUMBER_OF_QUESTIONS, false)
 
         when:
-        def result = tournamentService.getTournamentsForCourseExecution(externalCourseExecution.getId())
+        def result = tournamentService.getTournamentsForCourseExecution(EXTERNAL_COURSE_EXECUTION_ID_1)
 
         then: "the returned data is correct"
         result.size() == 3
@@ -66,7 +66,7 @@ class GetTournamentsTest extends TournamentTest {
         def tournamentDto3 = createTournament(creator1, STRING_DATE_TODAY, STRING_DATE_LATER, NUMBER_OF_QUESTIONS, true)
 
         when:
-        def result = tournamentService.getTournamentsForCourseExecution(externalCourseExecution.getId())
+        def result = tournamentService.getTournamentsForCourseExecution(EXTERNAL_COURSE_EXECUTION_ID_1)
 
         then: "the returned data is correct"
         result.size() == 3
@@ -76,7 +76,7 @@ class GetTournamentsTest extends TournamentTest {
         given: 'nothing'
 
         when:
-        def result = tournamentService.getTournamentsForCourseExecution(externalCourseExecution.getId())
+        def result = tournamentService.getTournamentsForCourseExecution(EXTERNAL_COURSE_EXECUTION_ID_1)
 
         then: "there is no returned data"
         result.size() == 0

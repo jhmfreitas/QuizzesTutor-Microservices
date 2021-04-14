@@ -61,4 +61,14 @@ public class TournamentCourseExecution {
     public int hashCode() {
         return Objects.hash(courseId, status, courseAcronym);
     }
+
+    @Override
+    public String toString() {
+        return "TournamentCourseExecution{" +
+                "id=" + id +
+                ", courseId=" + courseId +
+                ", status=" + status +
+                ", courseAcronym='" + courseAcronym + '\'' +
+                '}';
+    }
 }

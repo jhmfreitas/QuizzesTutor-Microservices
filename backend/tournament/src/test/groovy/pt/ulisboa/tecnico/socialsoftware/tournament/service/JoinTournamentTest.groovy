@@ -2,8 +2,10 @@ package pt.ulisboa.tecnico.socialsoftware.tournament.service
 
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.context.TestConfiguration
+import pt.ulisboa.tecnico.socialsoftware.common.dtos.tournament.ExternalStatementCreationDto
 import pt.ulisboa.tecnico.socialsoftware.common.exceptions.TutorException
 import pt.ulisboa.tecnico.socialsoftware.tournament.BeanConfiguration
+import pt.ulisboa.tecnico.socialsoftware.tournament.domain.TournamentParticipant
 
 import static pt.ulisboa.tecnico.socialsoftware.common.exceptions.ErrorMessage.*
 
@@ -16,11 +18,12 @@ class JoinTournamentTest extends TournamentTest {
         tournamentDto = createTournament(creator1, STRING_DATE_TODAY, STRING_DATE_LATER, NUMBER_OF_QUESTIONS, false)
 
         privateTournamentDto = createPrivateTournament(creator1, STRING_DATE_TODAY, STRING_DATE_LATER, NUMBER_OF_QUESTIONS, false, '123')
-
-        //createMultipleChoiceQuestion(LOCAL_DATE_TODAY, QUESTION_1_CONTENT, QUESTION_1_TITLE, Question.Status.AVAILABLE, externalCourse)
     }
 
     def "1 student join an open tournament and get participants" () {
+        given:
+        tournamentRequiredStub.getTournamentParticipant(_ as Integer) >> new TournamentParticipant(1, USER_1_USERNAME, USER_1_NAME)
+
         when:
         tournamentService.joinTournament(studentDto.getId(), tournamentDto.getId(), "")
 
@@ -65,6 +68,7 @@ class JoinTournamentTest extends TournamentTest {
     def "Student tries to join tournament twice" () {
         given:
         tournamentRepository.findById(tournamentDto.getId()).orElse(null).addParticipant(participant1, "")
+        tournamentRequiredStub.getTournamentParticipant(_ as Integer) >> new TournamentParticipant(1, USER_1_USERNAME, USER_1_NAME)
 
         when:
         tournamentService.joinTournament(studentDto.getId(), tournamentDto.getId(), "")
@@ -83,6 +87,7 @@ class JoinTournamentTest extends TournamentTest {
     def "Non-existing student tries to join tournament" () {
         given: 'a non-existing user'
         def fakeUserId = 99
+        tournamentRequiredStub.getTournamentParticipant(99) >> {throw new TutorException(USER_NOT_FOUND, fakeUserId)}
 
         when:
         tournamentService.joinTournament(fakeUserId, tournamentDto.getId(), "")
@@ -97,6 +102,7 @@ class JoinTournamentTest extends TournamentTest {
 
     def "student joins an open and private tournament with correct password" () {
         when:
+        tournamentRequiredStub.getTournamentParticipant(studentDto.getId()) >> new TournamentParticipant(studentDto.getId(), USER_1_USERNAME, USER_1_NAME)
         tournamentService.joinTournament(studentDto.getId(), privateTournamentDto.getId(), "123")
 
         then: "the student have joined the tournament"

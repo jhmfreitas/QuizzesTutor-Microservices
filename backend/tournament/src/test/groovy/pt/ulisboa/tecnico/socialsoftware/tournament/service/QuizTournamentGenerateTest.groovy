@@ -2,8 +2,11 @@ package pt.ulisboa.tecnico.socialsoftware.tournament.service
 
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.context.TestConfiguration
+import pt.ulisboa.tecnico.socialsoftware.common.dtos.answer.StatementQuizDto
 import pt.ulisboa.tecnico.socialsoftware.common.dtos.quiz.QuizType
+import pt.ulisboa.tecnico.socialsoftware.common.dtos.tournament.ExternalStatementCreationDto
 import pt.ulisboa.tecnico.socialsoftware.common.dtos.tournament.TopicWithCourseDto
+import pt.ulisboa.tecnico.socialsoftware.common.dtos.user.StudentDto
 import pt.ulisboa.tecnico.socialsoftware.common.exceptions.TutorException
 import pt.ulisboa.tecnico.socialsoftware.common.utils.DateHandler
 import pt.ulisboa.tecnico.socialsoftware.tournament.BeanConfiguration
@@ -14,38 +17,38 @@ import static pt.ulisboa.tecnico.socialsoftware.common.exceptions.ErrorMessage.N
 class QuizTournamentGenerateTest extends TournamentTest {
     def tournamentDto
     def question
+    def studentDto2
 
     def setup() {
         tournamentDto = createTournament(creator1, STRING_DATE_TODAY, STRING_DATE_LATER, NUMBER_OF_QUESTIONS, false)
 
-        /*createAssessmentWithTopicConjunction(ASSESSMENT_1_TITLE, Assessment.Status.AVAILABLE, externalCourseExecution)
-
-        question = createMultipleChoiceQuestion(LOCAL_DATE_TODAY, QUESTION_1_CONTENT, QUESTION_1_TITLE, Question.Status.AVAILABLE, externalCourse)*/
+        studentDto2 = new StudentDto()
+        studentDto2.setId(2)
+        studentDto2.setName(USER_2_NAME)
+        studentDto2.setUsername(USER_2_USERNAME)
     }
 
     def "generate a quiz with 1 student solving" () {
         given:
         tournamentRepository.findById(tournamentDto.getId()).orElse(null).addParticipant(participant1, "")
+        tournamentRequiredStub.createQuiz(_ as Integer, _ as Integer, _ as ExternalStatementCreationDto) >> 1
+        tournamentRequiredStub.startTournamentQuiz(_ as Integer, _ as Integer) >> new StatementQuizDto()
 
         when:
         tournamentService.solveQuiz(participant1.getId(), tournamentDto.getId())
 
-        then: "the correct quiz is inside the repository"
-        quizRepository.count() == 1L
-        def result = quizRepository.findAll().get(0)
-        result.getId() != null
-        result.getTitle() == ("Tournament " + tournamentDto.getId() + " Quiz")
-        result.getType() == QuizType.EXTERNAL_QUIZ
-        DateHandler.toISOString(result.getConclusionDate()) == STRING_DATE_LATER
-        result.getQuizQuestionsNumber() == NUMBER_OF_QUESTIONS
+        then: "quiz is generated"
+        def tournament = tournamentRepository.findById(tournamentDto.getId()).get()
+        tournament.getQuizId() == 1
     }
 
     def "generate a quiz with 1 student solving and question with less one topic" () {
         given: 'a participant'
         tournamentRepository.findById(tournamentDto.getId()).orElse(null).addParticipant(participant1, "")
         and: 'remove topic from question'
-        question.getTopics().remove(topicDto2)
         topicDto2.getQuestions().remove(question)
+        tournamentRequiredStub.createQuiz(_ as Integer, _ as Integer, _ as ExternalStatementCreationDto) >> 1
+        tournamentRequiredStub.startTournamentQuiz(_ as Integer, _ as Integer) >> new StatementQuizDto()
 
         when:
         tournamentService.solveQuiz(participant1.getId(), tournamentDto.getId())
@@ -53,7 +56,6 @@ class QuizTournamentGenerateTest extends TournamentTest {
         then:
         def error = thrown(TutorException)
         error.errorMessage == NOT_ENOUGH_QUESTIONS_TOURNAMENT
-        quizRepository.count() == 0L
     }
 
     def "generate a quiz with 1 student solving and question with more one topic" () {
@@ -73,29 +75,24 @@ class QuizTournamentGenerateTest extends TournamentTest {
         then:
         def error = thrown(TutorException)
         error.errorMessage == NOT_ENOUGH_QUESTIONS_TOURNAMENT
-        quizRepository.count() == 0L
     }
 
     def "generate a quiz with 2 student solving" () {
         given:
-        def participant2 = createTournamentParticipant(user2)
+        def participant2 = createTournamentParticipant(studentDto2)
         and:
         tournamentRepository.findById(tournamentDto.getId()).orElse(null).addParticipant(participant1, "")
         tournamentRepository.findById(tournamentDto.getId()).orElse(null).addParticipant(participant2, "")
+        tournamentRequiredStub.createQuiz(_ as Integer, _ as Integer, _ as ExternalStatementCreationDto) >> 1
+        tournamentRequiredStub.startTournamentQuiz(_ as Integer, _ as Integer) >> new StatementQuizDto()
 
         when: 'both students solve the quiz'
         tournamentService.solveQuiz(participant1.getId(), tournamentDto.getId())
         tournamentService.solveQuiz(participant2.getId(), tournamentDto.getId())
 
-        then: 'there is only one quiz generated'
-        quizRepository.count() == 1L
-        and: "the correct quiz is inside the repository"
-        def result = quizRepository.findAll().get(0)
-        result.getId() != null
-        result.getTitle() == ("Tournament " + tournamentDto.getId() + " Quiz")
-        result.getType() == QuizType.EXTERNAL_QUIZ
-        DateHandler.toISOString(result.getConclusionDate()) == STRING_DATE_LATER
-        result.getQuizQuestionsNumber() == NUMBER_OF_QUESTIONS
+        then: 'one quiz generated'
+        def tournament = tournamentRepository.findById(tournamentDto.getId()).get()
+        tournament.getQuizId() == 1
     }
 
     def "disabling assessment for already created tournament" () {
@@ -110,7 +107,6 @@ class QuizTournamentGenerateTest extends TournamentTest {
         then:
         def error = thrown(TutorException)
         error.errorMessage == NOT_ENOUGH_QUESTIONS_TOURNAMENT
-        quizRepository.count() == 0L
     }
 
     @TestConfiguration

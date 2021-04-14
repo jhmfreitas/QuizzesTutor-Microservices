@@ -2,11 +2,14 @@ package pt.ulisboa.tecnico.socialsoftware.tournament.service
 
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.context.TestConfiguration
+import pt.ulisboa.tecnico.socialsoftware.common.dtos.tournament.TopicListDto
 import pt.ulisboa.tecnico.socialsoftware.common.dtos.tournament.TopicWithCourseDto
 import pt.ulisboa.tecnico.socialsoftware.common.dtos.tournament.TournamentDto
 import pt.ulisboa.tecnico.socialsoftware.common.exceptions.TutorException
 import pt.ulisboa.tecnico.socialsoftware.common.utils.DateHandler
 import pt.ulisboa.tecnico.socialsoftware.tournament.BeanConfiguration
+import pt.ulisboa.tecnico.socialsoftware.tournament.domain.TournamentCreator
+import pt.ulisboa.tecnico.socialsoftware.tournament.domain.TournamentTopic
 import spock.lang.Unroll
 
 import static pt.ulisboa.tecnico.socialsoftware.common.exceptions.ErrorMessage.*
@@ -26,9 +29,12 @@ class CreateTournamentTest extends TournamentTest {
         tournamentDto.setEndTime(endTime)
         tournamentDto.setNumberOfQuestions(numberOfQuestions)
         tournamentDto.setCanceled(false)
+        tournamentRequiredStub.getTournamentCreator(_ as Integer) >> new TournamentCreator(creator1.getId(), USER_1_USERNAME, USER_1_NAME)
+        tournamentRequiredStub.getTournamentCourseExecution(_ as Integer) >> tournamentExternalCourseExecution
+        tournamentRequiredStub.getTournamentTopics(_ as TopicListDto) >> topicsList
 
         when:
-        tournamentService.createTournament(creator1.getId(), externalCourseExecution.getId(), topics, tournamentDto)
+        tournamentService.createTournament(creator1.getId(), EXTERNAL_COURSE_EXECUTION_ID_1, topics, tournamentDto)
 
         then: "the correct tournament is inside the repository"
         tournamentRepository.count() == 1L
@@ -58,9 +64,12 @@ class CreateTournamentTest extends TournamentTest {
         tournamentDto.setCanceled(false)
         tournamentDto.setPrivateTournament(true)
         tournamentDto.setPassword('123')
+        tournamentRequiredStub.getTournamentCreator(_ as Integer) >> new TournamentCreator(creator1.getId(), USER_1_USERNAME, USER_1_NAME)
+        tournamentRequiredStub.getTournamentCourseExecution(_ as Integer) >> tournamentExternalCourseExecution
+        tournamentRequiredStub.getTournamentTopics(_ as TopicListDto) >> topicsList
 
         when:
-        tournamentService.createTournament(creator1.getId(), externalCourseExecution.getId(), topics, tournamentDto)
+        tournamentService.createTournament(creator1.getId(), EXTERNAL_COURSE_EXECUTION_ID_1, topics, tournamentDto)
 
         then: "the correct tournament is inside the repository"
         tournamentRepository.count() == 1L
@@ -99,7 +108,7 @@ class CreateTournamentTest extends TournamentTest {
             topicsList = [-1] as Set
         }
 
-        tournamentService.createTournament(userId, externalCourseExecution.getId(), topicsList, tournamentDto)
+        tournamentService.createTournament(userId, EXTERNAL_COURSE_EXECUTION_ID_1, topicsList, tournamentDto)
     }
 
     @Unroll
@@ -109,6 +118,16 @@ class CreateTournamentTest extends TournamentTest {
         tournamentDto.setEndTime(endTime)
         tournamentDto.setNumberOfQuestions(numberOfQuestions)
         tournamentDto.setCanceled(false)
+
+        if (userType.equals("99")) {
+            tournamentRequiredStub.getTournamentCreator(_ as Integer) >> {throw new TutorException(USER_NOT_FOUND, 99)}
+        }
+        else {
+            tournamentRequiredStub.getTournamentCreator(_ as Integer) >>  new TournamentCreator(creator1.getId(), USER_1_USERNAME, USER_1_NAME)
+        }
+
+        tournamentRequiredStub.getTournamentCourseExecution(_ as Integer) >> tournamentExternalCourseExecution
+        tournamentRequiredStub.getTournamentTopics(_ as TopicListDto) >> topicsList
 
         when:
         createTournament(userType, topicsType)
@@ -152,9 +171,13 @@ class CreateTournamentTest extends TournamentTest {
         and: "with new course"
         topicDto3.setCourseId(2)
         topics.add(topicDto3.getId())
+        topicsList.add(createTournamentTopic(topicDto3))
+        tournamentRequiredStub.getTournamentCreator(_ as Integer) >> new TournamentCreator(creator1.getId(), USER_1_USERNAME, USER_1_NAME)
+        tournamentRequiredStub.getTournamentCourseExecution(_ as Integer) >> tournamentExternalCourseExecution
+        tournamentRequiredStub.getTournamentTopics(_ as TopicListDto) >> topicsList
 
         when:
-        tournamentService.createTournament(creator1.getId(), externalCourseExecution.getId(), topics, tournamentDto)
+        tournamentService.createTournament(creator1.getId(), EXTERNAL_COURSE_EXECUTION_ID_1, topics, tournamentDto)
 
         then:
         def exception = thrown(TutorException)

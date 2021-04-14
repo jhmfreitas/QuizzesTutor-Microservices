@@ -1,1 +1,1 @@
-mvn clean install test -Papitest
+mvn clean test install -Papitest

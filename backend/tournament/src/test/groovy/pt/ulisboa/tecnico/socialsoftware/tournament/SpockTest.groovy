@@ -13,6 +13,7 @@ import pt.ulisboa.tecnico.socialsoftware.common.dtos.question.Languages
 import pt.ulisboa.tecnico.socialsoftware.common.utils.DateHandler
 import pt.ulisboa.tecnico.socialsoftware.tournament.repository.TournamentRepository
 import pt.ulisboa.tecnico.socialsoftware.tournament.services.local.TournamentProvidedService
+import pt.ulisboa.tecnico.socialsoftware.tournament.services.remote.TournamentRequiredService
 import spock.lang.Specification
 
 import java.time.LocalDateTime
@@ -107,26 +108,6 @@ class SpockTest extends Specification {
 
     @Autowired
     TournamentProvidedService tournamentService
-
-    /*def createExternalCourseAndExecution() {
-        externalCourse = new Course(COURSE_1_NAME, CourseType.TECNICO)
-        courseRepository.save(externalCourse)
-
-        externalCourseExecution = new CourseExecution(externalCourse, COURSE_1_ACRONYM, COURSE_1_ACADEMIC_TERM, CourseType.TECNICO, LOCAL_DATE_TODAY)
-        courseExecutionRepository.save(externalCourseExecution)
-    }
-
-    def persistentCourseCleanup() {
-        Course c
-        CourseExecution ce
-        if(courseExecutionRepository.findByFields(COURSE_1_ACRONYM, COURSE_1_ACADEMIC_TERM, CourseType.TECNICO as String).isPresent()){
-            ce = courseExecutionRepository.findByFields(COURSE_1_ACRONYM, COURSE_1_ACADEMIC_TERM, CourseType.TECNICO as String).get()
-            c = ce.getCourse()
-            courseExecutionRepository.dissociateCourseExecutionUsers(ce.getId())
-            courseExecutionRepository.deleteById(ce.getId())
-            courseRepository.deleteById(c.getId())
-        }
-    }*/
 
     RESTClient restClient
 

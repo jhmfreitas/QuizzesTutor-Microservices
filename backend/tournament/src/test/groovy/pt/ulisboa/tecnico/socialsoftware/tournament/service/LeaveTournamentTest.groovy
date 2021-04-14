@@ -10,14 +10,9 @@ import static pt.ulisboa.tecnico.socialsoftware.common.exceptions.ErrorMessage.U
 @DataJpaTest
 class LeaveTournamentTest extends TournamentTest {
     def tournamentDto
-    //def user2
 
     def setup() {
-        //user2 = createUser(2, USER_2_NAME, USER_2_USERNAME)
-
         tournamentDto = createTournament(creator1, STRING_DATE_TODAY, STRING_DATE_LATER, NUMBER_OF_QUESTIONS, false)
-
-        //createMultipleChoiceQuestion(LOCAL_DATE_TODAY, QUESTION_1_CONTENT, QUESTION_1_TITLE, Question.Status.AVAILABLE, externalCourse)
     }
 
     def "Student leaves the tournament" () {

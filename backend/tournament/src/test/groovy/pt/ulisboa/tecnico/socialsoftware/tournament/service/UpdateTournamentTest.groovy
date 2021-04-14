@@ -2,11 +2,13 @@ package pt.ulisboa.tecnico.socialsoftware.tournament.service
 
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.context.TestConfiguration
+import pt.ulisboa.tecnico.socialsoftware.common.dtos.tournament.TopicListDto
 import pt.ulisboa.tecnico.socialsoftware.common.dtos.tournament.TopicWithCourseDto
 import pt.ulisboa.tecnico.socialsoftware.common.dtos.tournament.TournamentDto
 import pt.ulisboa.tecnico.socialsoftware.common.exceptions.TutorException
 import pt.ulisboa.tecnico.socialsoftware.common.utils.DateHandler
 import pt.ulisboa.tecnico.socialsoftware.tournament.BeanConfiguration
+import pt.ulisboa.tecnico.socialsoftware.tournament.domain.TournamentCreator
 import pt.ulisboa.tecnico.socialsoftware.tournament.domain.TournamentTopic
 
 import static pt.ulisboa.tecnico.socialsoftware.common.exceptions.ErrorMessage.TOURNAMENT_IS_OPEN
@@ -30,17 +32,14 @@ class UpdateTournamentTest extends TournamentTest {
         tournamentDto.setEndTime(STRING_DATE_LATER)
         tournamentDto.setNumberOfQuestions(NUMBER_OF_QUESTIONS)
         tournamentDto.setCanceled(false)
-
-        /*reateAssessmentWithTopicConjunction(ASSESSMENT_1_TITLE, Assessment.Status.AVAILABLE, externalCourseExecution)
-
-        def question1 = createMultipleChoiceQuestion(LOCAL_DATE_TODAY, QUESTION_1_CONTENT, QUESTION_1_TITLE, Question.Status.AVAILABLE, externalCourse)
-
-        createOption(OPTION_1_CONTENT, question1)*/
     }
 
     def "user that created tournament changes start time"() {
         given:
-        tournamentDto = tournamentService.createTournament(creator1.getId(), externalCourseExecution.getId(), topics, tournamentDto)
+        tournamentRequiredStub.getTournamentCreator(_ as Integer) >> new TournamentCreator(creator1.getId(), USER_1_USERNAME, USER_1_NAME)
+        tournamentRequiredStub.getTournamentCourseExecution(_ as Integer) >> tournamentExternalCourseExecution
+        tournamentRequiredStub.getTournamentTopics(_ as TopicListDto) >> topicsList
+        tournamentDto = tournamentService.createTournament(creator1.getId(), EXTERNAL_COURSE_EXECUTION_ID_1, topics, tournamentDto)
         and: "new startTime"
         def newStartTime = STRING_DATE_TOMORROW_PLUS_10_MINUTES
         tournamentDto.setStartTime(newStartTime)
@@ -56,7 +55,10 @@ class UpdateTournamentTest extends TournamentTest {
 
     def "user that created tournament changes end time"() {
         given:
-        tournamentDto = tournamentService.createTournament(creator1.getId(), externalCourseExecution.getId(), topics, tournamentDto)
+        tournamentRequiredStub.getTournamentCreator(_ as Integer) >> new TournamentCreator(creator1.getId(), USER_1_USERNAME, USER_1_NAME)
+        tournamentRequiredStub.getTournamentCourseExecution(_ as Integer) >> tournamentExternalCourseExecution
+        tournamentRequiredStub.getTournamentTopics(_ as TopicListDto) >> topicsList
+        tournamentDto = tournamentService.createTournament(creator1.getId(), EXTERNAL_COURSE_EXECUTION_ID_1, topics, tournamentDto)
         and: "new endTime"
         def newEndTime = STRING_DATE_LATER_PLUS_10_MINUTES
         tournamentDto.setEndTime(newEndTime)
@@ -72,7 +74,10 @@ class UpdateTournamentTest extends TournamentTest {
 
     def "user that created tournament changes number of questions"() {
         given: "a tournament"
-        tournamentDto = tournamentService.createTournament(creator1.getId(), externalCourseExecution.getId(), topics, tournamentDto)
+        tournamentRequiredStub.getTournamentCreator(_ as Integer) >> new TournamentCreator(creator1.getId(), USER_1_USERNAME, USER_1_NAME)
+        tournamentRequiredStub.getTournamentCourseExecution(_ as Integer) >> tournamentExternalCourseExecution
+        tournamentRequiredStub.getTournamentTopics(_ as TopicListDto) >> topicsList
+        tournamentDto = tournamentService.createTournament(creator1.getId(), EXTERNAL_COURSE_EXECUTION_ID_1, topics, tournamentDto)
         and: "a new number of questions"
         def newNumberOfQuestions = 10
         tournamentDto.setNumberOfQuestions(newNumberOfQuestions)
@@ -88,9 +93,13 @@ class UpdateTournamentTest extends TournamentTest {
 
     def "user that created tournament adds topic of same course"() {
         given: "a tournament"
-        tournamentDto = tournamentService.createTournament(creator1.getId(), externalCourseExecution.getId(), topics, tournamentDto)
+        tournamentRequiredStub.getTournamentCreator(_ as Integer) >> new TournamentCreator(creator1.getId(), USER_1_USERNAME, USER_1_NAME)
+        tournamentRequiredStub.getTournamentCourseExecution(_ as Integer) >> tournamentExternalCourseExecution
+        tournamentRequiredStub.getTournamentTopics(_ as TopicListDto) >> topicsList
+        tournamentDto = tournamentService.createTournament(creator1.getId(), EXTERNAL_COURSE_EXECUTION_ID_1, topics, tournamentDto)
         and: "a new topics list"
         topics.add(topicDto3.getId())
+        topicsList.add(createTournamentTopic(topicDto3))
 
         when:
         tournamentService.updateTournament(topics, tournamentDto)
@@ -103,15 +112,18 @@ class UpdateTournamentTest extends TournamentTest {
 
     def "user that created tournament adds topic of different course"() {
         given: "a tournament"
-        tournamentDto = tournamentService.createTournament(creator1.getId(), externalCourseExecution.getId(), topics, tournamentDto)
+        tournamentRequiredStub.getTournamentCreator(_ as Integer) >> new TournamentCreator(creator1.getId(), USER_1_USERNAME, USER_1_NAME)
+        tournamentRequiredStub.getTournamentCourseExecution(_ as Integer) >> tournamentExternalCourseExecution
+        tournamentRequiredStub.getTournamentTopics(_ as TopicListDto) >> topicsList
+        tournamentDto = tournamentService.createTournament(creator1.getId(), EXTERNAL_COURSE_EXECUTION_ID_1, topics, tournamentDto)
         and: "a new topics list"
-        tournamentTopic3
         def topicDto4 = new TopicWithCourseDto()
         topicDto4.setId(4)
         topicDto4.setName(TOPIC_3_NAME)
         and: "with a different course"
-        topicDto3.setCourseId(2)
+        topicDto4.setCourseId(2)
         topics.add(topicDto4.getId())
+        topicsList.add(createTournamentTopic(topicDto4))
 
         when:
         tournamentService.updateTournament(topics, tournamentDto)
@@ -126,9 +138,13 @@ class UpdateTournamentTest extends TournamentTest {
 
     def "user that created tournament removes existing topic from tournament that contains that topic"() {
         given: "a tournament"
-        tournamentDto = tournamentService.createTournament(creator1.getId(), externalCourseExecution.getId(), topics, tournamentDto)
+        tournamentRequiredStub.getTournamentCreator(_ as Integer) >> new TournamentCreator(creator1.getId(), USER_1_USERNAME, USER_1_NAME)
+        tournamentRequiredStub.getTournamentCourseExecution(_ as Integer) >> tournamentExternalCourseExecution
+        tournamentRequiredStub.getTournamentTopics(_ as TopicListDto) >> topicsList
+        tournamentDto = tournamentService.createTournament(creator1.getId(), EXTERNAL_COURSE_EXECUTION_ID_1, topics, tournamentDto)
         and: "a new topics list"
         topics.remove(topicDto2.getId())
+        topicsList.remove(tournamentTopic2)
 
         when:
         tournamentService.updateTournament(topics, tournamentDto)
@@ -141,8 +157,11 @@ class UpdateTournamentTest extends TournamentTest {
 
     def "user that created an open tournament tries to change it"() {
         given: "a tournament"
+        tournamentRequiredStub.getTournamentCreator(_ as Integer) >> new TournamentCreator(creator1.getId(), USER_1_USERNAME, USER_1_NAME)
+        tournamentRequiredStub.getTournamentCourseExecution(_ as Integer) >> tournamentExternalCourseExecution
+        tournamentRequiredStub.getTournamentTopics(_ as TopicListDto) >> topicsList
         tournamentDto.setStartTime(STRING_DATE_TODAY)
-        tournamentDto = tournamentService.createTournament(creator1.getId(), externalCourseExecution.getId(), topics, tournamentDto)
+        tournamentDto = tournamentService.createTournament(creator1.getId(), EXTERNAL_COURSE_EXECUTION_ID_1, topics, tournamentDto)
 
         when:
         tournamentService.updateTournament(topics, tournamentDto)
@@ -157,7 +176,10 @@ class UpdateTournamentTest extends TournamentTest {
         given: "a tournament"
         tournamentDto.setStartTime(STRING_DATE_TODAY)
         tournamentDto.setEndTime(STRING_DATE_TODAY)
-        tournamentDto = tournamentService.createTournament(creator1.getId(), externalCourseExecution.getId(), topics, tournamentDto)
+        tournamentRequiredStub.getTournamentCreator(_ as Integer) >> new TournamentCreator(creator1.getId(), USER_1_USERNAME, USER_1_NAME)
+        tournamentRequiredStub.getTournamentCourseExecution(_ as Integer) >> tournamentExternalCourseExecution
+        tournamentRequiredStub.getTournamentTopics(_ as TopicListDto) >> topicsList
+        tournamentDto = tournamentService.createTournament(creator1.getId(), EXTERNAL_COURSE_EXECUTION_ID_1, topics, tournamentDto)
         and: "a new number of questions"
         def newNumberOfQuestions = 10
         tournamentDto.setNumberOfQuestions(newNumberOfQuestions)
@@ -174,7 +196,10 @@ class UpdateTournamentTest extends TournamentTest {
     def "user that created tournament tries to change it with answers"() {
         given: "a tournament"
         tournamentDto.setStartTime(STRING_DATE_TODAY)
-        tournamentDto = tournamentService.createTournament(creator1.getId(), externalCourseExecution.getId(), topics, tournamentDto)
+        tournamentRequiredStub.getTournamentCreator(_ as Integer) >> new TournamentCreator(creator1.getId(), USER_1_USERNAME, USER_1_NAME)
+        tournamentRequiredStub.getTournamentCourseExecution(_ as Integer) >> tournamentExternalCourseExecution
+        tournamentRequiredStub.getTournamentTopics(_ as TopicListDto) >> topicsList
+        tournamentDto = tournamentService.createTournament(creator1.getId(), EXTERNAL_COURSE_EXECUTION_ID_1, topics, tournamentDto)
         and: "join a tournament"
         tournamentRepository.findById(tournamentDto.getId()).orElse(null).addParticipant(participant1, "")
         and: "solve a tournament"

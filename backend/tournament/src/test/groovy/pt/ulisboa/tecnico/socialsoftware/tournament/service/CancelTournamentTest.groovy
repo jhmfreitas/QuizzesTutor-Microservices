@@ -9,13 +9,6 @@ import static pt.ulisboa.tecnico.socialsoftware.common.exceptions.ErrorMessage.T
 
 @DataJpaTest
 class CancelTournamentTest extends TournamentTest {
-    def setup() {
-        /*createAssessmentWithTopicConjunction(ASSESSMENT_1_TITLE, Assessment.Status.AVAILABLE, externalCourseExecution)
-
-        def question1 = createMultipleChoiceQuestion(LOCAL_DATE_TODAY, QUESTION_1_CONTENT, QUESTION_1_TITLE, Question.Status.AVAILABLE, externalCourse)
-
-        createOption(OPTION_1_CONTENT, question1)*/
-    }
 
     def "user that created tournament cancels it"() {
         given:

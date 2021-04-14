@@ -9,9 +9,9 @@ import pt.ulisboa.tecnico.socialsoftware.tournament.config.TournamentModuleConfi
 @Configuration
 @EnableAutoConfiguration
 @Import({TournamentModuleConfiguration.class})
-public class TournamentServiceMain {
+public class TournamentServiceApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(TournamentServiceMain.class, args);
+        SpringApplication.run(TournamentServiceApplication.class, args);
     }
 }

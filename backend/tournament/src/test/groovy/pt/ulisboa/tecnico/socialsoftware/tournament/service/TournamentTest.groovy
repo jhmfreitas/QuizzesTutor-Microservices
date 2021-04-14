@@ -11,6 +11,7 @@ import pt.ulisboa.tecnico.socialsoftware.common.utils.DateHandler
 import pt.ulisboa.tecnico.socialsoftware.tournament.BeanConfiguration
 import pt.ulisboa.tecnico.socialsoftware.tournament.SpockTest
 import pt.ulisboa.tecnico.socialsoftware.tournament.domain.*
+import pt.ulisboa.tecnico.socialsoftware.tournament.services.remote.TournamentRequiredService
 
 @DataJpaTest
 class TournamentTest extends SpockTest {
@@ -19,8 +20,8 @@ class TournamentTest extends SpockTest {
     def assessment
     def tournamentTopic1
     def tournamentTopic2
-    def topics = new HashSet<Integer>()
-    def topicsList = new HashSet<TournamentTopic>()
+    def topics
+    def topicsList
     def studentDto
     def creator1
     def tournamentExternalCourseExecution
@@ -28,15 +29,14 @@ class TournamentTest extends SpockTest {
     def courseExecutionDto
     def topicDto1
     def topicDto2
+    def tournamentRequiredStub
 
     def setup() {
-        //createExternalCourseAndExecution()
-
         studentDto = new StudentDto()
         studentDto.setId(1)
         studentDto.setName(USER_1_NAME)
         studentDto.setUsername(USER_1_USERNAME)
-        //user1 = createUser(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, User.Role.STUDENT, externalCourseExecution)
+
         creator1 = createTournamentCreator(studentDto)
         participant1 = createTournamentParticipant(studentDto)
 
@@ -52,9 +52,8 @@ class TournamentTest extends SpockTest {
         topicDto2.setCourseId(1)
         tournamentTopic2 = createTournamentTopic(topicDto2)
 
-        topics.add(tournamentTopic1.getId())
-        topics.add(tournamentTopic2.getId())
-
+        topics = new HashSet<Integer>(tournamentTopic1.getId(), tournamentTopic2.getId())
+        topicsList = new HashSet<TournamentTopic>()
         topicsList.add(tournamentTopic1)
         topicsList.add(tournamentTopic2)
 
@@ -66,6 +65,8 @@ class TournamentTest extends SpockTest {
         courseExecutionDto.setStatus(CourseExecutionStatus.ACTIVE)
         courseExecutionDto.setAcronym(COURSE_1_ACRONYM)
         tournamentExternalCourseExecution = createTournamentCourseExecution(1, courseExecutionDto)
+        tournamentRequiredStub = Stub(TournamentRequiredService)
+        tournamentService.setTournamentRequiredService(tournamentRequiredStub)
     }
 
     def createTournament(TournamentCreator creator, String startTime, String endTime, Integer numberOfQuestions, boolean isCanceled) {
@@ -99,50 +100,6 @@ class TournamentTest extends SpockTest {
 
         return tournament.getDto()
     }
-
-    /*def createAssessmentWithTopicConjunction(String title, Assessment.Status status, CourseExecution courseExecution) {
-        assessment = new Assessment()
-        assessment.setTitle(title)
-        assessment.setStatus(status)
-        assessment.setCourseExecution(courseExecution)
-
-        def topicConjunction = new TopicConjunction()
-        topicConjunction.addTopic(topic1)
-        topicConjunction.addTopic(topic2)
-        topicConjunction.setAssessment(assessment)
-        assessment.addTopicConjunction(topicConjunction)
-
-        assessmentRepository.save(assessment)
-    }
-
-    def createMultipleChoiceQuestion(LocalDateTime creationDate, String content, String title, Question.Status status, Course course) {
-        def question = new Question()
-        question.setKey(1)
-        question.setCreationDate(creationDate)
-        question.setContent(content)
-        question.setTitle(title)
-        question.setStatus(status)
-        question.setCourse(course)
-        question.addTopic(topic1)
-        question.addTopic(topic2)
-
-        def questionDetails = new MultipleChoiceQuestion()
-        question.setQuestionDetails(questionDetails)
-
-        questionRepository.save(question)
-
-        return question
-    }
-
-    def createOption(String content, Question question) {
-        def optionDto = new OptionDto()
-        optionDto.setContent(OPTION_1_CONTENT)
-        optionDto.setCorrect(true)
-        def options = new ArrayList<OptionDto>()
-        options.add(optionDto)
-        question.getQuestionDetails().setOptions(options)
-        questionRepository.save(question)
-    }*/
 
     def createTournamentCreator(StudentDto studentDto) {
         return new TournamentCreator(studentDto.getId(), studentDto.getUsername(), studentDto.getName())

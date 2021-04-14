@@ -12,7 +12,6 @@ import pt.ulisboa.tecnico.socialsoftware.common.dtos.tournament.TopicListDto;
 import pt.ulisboa.tecnico.socialsoftware.common.dtos.tournament.TopicWithCourseDto;
 import pt.ulisboa.tecnico.socialsoftware.common.dtos.user.UserDto;
 import pt.ulisboa.tecnico.socialsoftware.common.exceptions.TutorException;
-import pt.ulisboa.tecnico.socialsoftware.common.remote.*;
 import pt.ulisboa.tecnico.socialsoftware.tournament.domain.TournamentCourseExecution;
 import pt.ulisboa.tecnico.socialsoftware.tournament.domain.TournamentCreator;
 import pt.ulisboa.tecnico.socialsoftware.tournament.domain.TournamentParticipant;
@@ -27,13 +26,10 @@ import static pt.ulisboa.tecnico.socialsoftware.common.exceptions.ErrorMessage.U
 public class TournamentRequiredService {
 
     @Autowired
-    private CourseExecutionInterface courseExecutionInterface;
+    private QuizController quizController;
 
     @Autowired
-    private QuizInterface quizInterface;
-
-    @Autowired
-    private AnswerInterface answerInterface;
+    private AnswerController answerController;
 
     @Autowired
     private UserController userController;
@@ -73,7 +69,7 @@ public class TournamentRequiredService {
     }
 
     public Integer getDemoCourseExecutionId() {
-        return courseExecutionInterface.getDemoCourseExecutionId();
+        return courseExecutionController.findDemoCourseExecution();
     }
 
     public Set<TournamentTopic> getTournamentTopics(TopicListDto topicsList) {
@@ -89,22 +85,22 @@ public class TournamentRequiredService {
     }
 
     public Integer createQuiz(Integer creatorId, Integer courseExecutionId, ExternalStatementCreationDto quizDetails) {
-        return answerInterface.generateQuizAndGetId(creatorId, courseExecutionId, quizDetails);
+        return answerController.generateQuizAndGetId(creatorId, courseExecutionId, quizDetails);
     }
 
     public StatementQuizDto startTournamentQuiz(Integer userId, Integer quizId) {
-        return answerInterface.startQuiz(userId, quizId);
+        return answerController.startQuiz(userId, quizId);
     }
 
     public QuizDto getQuiz(Integer quizId) {
-        return quizInterface.findQuizById(quizId);
+        return quizController.findQuizById(quizId);
     }
 
     public void updateQuiz(QuizDto quizDto) {
-        quizInterface.updateQuiz(quizDto);
+        quizController.updateQuiz(quizDto);
     }
 
     public void deleteQuiz(Integer quizId) {
-        quizInterface.deleteExternalQuiz(quizId);
+        quizController.deleteQuiz(quizId);
     }
 }

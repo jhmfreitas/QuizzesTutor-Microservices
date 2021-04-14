@@ -45,4 +45,13 @@ public class TournamentCreator {
         dto.setUsername(getUsername());
         return dto;
     }
+
+    @Override
+    public String toString() {
+        return "TournamentCreator{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", name='" + name + '\'' +
+                '}';
+    }
 }

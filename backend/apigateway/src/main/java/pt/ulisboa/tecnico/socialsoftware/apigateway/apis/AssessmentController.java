@@ -1,4 +1,4 @@
-package pt.ulisboa.tecnico.socialsoftware.tutor.apis;
+package pt.ulisboa.tecnico.socialsoftware.apigateway.apis;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;

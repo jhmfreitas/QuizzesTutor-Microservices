@@ -19,4 +19,9 @@ public class CourseExecutionController {
     public CourseExecutionDto findCourseExecution(@PathVariable Integer courseExecutionId) {
         return courseExecutionInterface.findCourseExecution(courseExecutionId);
     }
+
+    @RequestMapping(value = "/demo", method = RequestMethod.GET)
+    public Integer findDemoCourseExecution() {
+        return courseExecutionInterface.getDemoCourseExecutionId();
+    }
 }
