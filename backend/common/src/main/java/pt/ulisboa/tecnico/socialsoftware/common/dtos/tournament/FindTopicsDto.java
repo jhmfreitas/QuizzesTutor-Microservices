@@ -1,8 +1,9 @@
 package pt.ulisboa.tecnico.socialsoftware.common.dtos.tournament;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class FindTopicsDto {
+public class FindTopicsDto implements Serializable {
 
     private List<TopicWithCourseDto> topicWithCourseDtoList;
 

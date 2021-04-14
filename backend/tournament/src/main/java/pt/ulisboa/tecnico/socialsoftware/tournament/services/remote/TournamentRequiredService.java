@@ -27,13 +27,7 @@ import static pt.ulisboa.tecnico.socialsoftware.common.exceptions.ErrorMessage.U
 public class TournamentRequiredService {
 
     @Autowired
-    private UserInterface userInterface;
-
-    @Autowired
     private CourseExecutionInterface courseExecutionInterface;
-
-    @Autowired
-    private QuestionInterface questionInterface;
 
     @Autowired
     private QuizInterface quizInterface;
@@ -43,6 +37,12 @@ public class TournamentRequiredService {
 
     @Autowired
     private UserController userController;
+
+    @Autowired
+    private QuestionController questionController;
+
+    @Autowired
+    private CourseExecutionController courseExecutionController;
 
 
     public TournamentCreator getTournamentCreator(Integer userId) {
@@ -57,7 +57,7 @@ public class TournamentRequiredService {
     }
 
     public TournamentParticipant getTournamentParticipant(Integer userId) {
-        UserDto userDto = userInterface.findUser(userId);
+        UserDto userDto = userController.findUser(userId);
         if (userDto != null) {
             return new TournamentParticipant(userDto.getId(), userDto.getUsername(), userDto.getName());
         }
@@ -67,7 +67,7 @@ public class TournamentRequiredService {
     }
 
     public TournamentCourseExecution getTournamentCourseExecution(Integer courseExecutionId) {
-        CourseExecutionDto courseExecutionDto = courseExecutionInterface.findCourseExecution(courseExecutionId);
+        CourseExecutionDto courseExecutionDto = courseExecutionController.findCourseExecution(courseExecutionId);
         return new TournamentCourseExecution(courseExecutionDto.getCourseExecutionId(),
                 courseExecutionDto.getCourseId(), CourseExecutionStatus.valueOf(courseExecutionDto.getStatus().toString()), courseExecutionDto.getAcronym());
     }
@@ -77,7 +77,7 @@ public class TournamentRequiredService {
     }
 
     public Set<TournamentTopic> getTournamentTopics(TopicListDto topicsList) {
-        FindTopicsDto topicWithCourseDtoList = questionInterface.findTopics(topicsList);
+        FindTopicsDto topicWithCourseDtoList = questionController.findTopics(topicsList);
         Set<TournamentTopic> topics = new HashSet<>();
 
         for (TopicWithCourseDto topicWithCourseDto : topicWithCourseDtoList.getTopicWithCourseDtoList()) {

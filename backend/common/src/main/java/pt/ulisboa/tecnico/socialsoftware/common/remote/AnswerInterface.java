@@ -36,8 +36,8 @@ public class AnswerInterface implements AnswerContract {
         logger.info("startQuiz userId: {} quizId: {}", userId, quizId);
         RestTemplate restTemplate = new RestTemplate();
         try {
-            StatementQuizDto statementQuizDto = restTemplate.postForObject(ENDPOINT + "/rest/answer/startQuiz/" + quizId + "/" + userId,
-                    null, StatementQuizDto.class);
+            StatementQuizDto statementQuizDto = restTemplate.getForObject(ENDPOINT + "/rest/answer/startQuiz/" + quizId + "/" + userId,
+                    StatementQuizDto.class);
             logger.info("startQuiz: {}", statementQuizDto);
             return statementQuizDto;
         } catch (HttpClientErrorException e) {

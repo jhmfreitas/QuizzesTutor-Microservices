@@ -1,8 +1,9 @@
 package pt.ulisboa.tecnico.socialsoftware.common.dtos.tournament;
 
+import java.io.Serializable;
 import java.util.Set;
 
-public class TopicListDto {
+public class TopicListDto implements Serializable {
 
     private Set<Integer> topicList;
 

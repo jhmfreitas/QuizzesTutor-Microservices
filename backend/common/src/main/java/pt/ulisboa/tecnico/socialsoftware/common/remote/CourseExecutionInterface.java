@@ -7,7 +7,7 @@ import org.springframework.web.client.RestTemplate;
 import pt.ulisboa.tecnico.socialsoftware.common.dtos.execution.CourseExecutionDto;
 import pt.ulisboa.tecnico.socialsoftware.common.exceptions.RemoteAccessException;
 
-public class CourseExecutionInterface implements CourseExecutionContract{
+public class CourseExecutionInterface implements CourseExecutionContract {
     private static final Logger logger = LoggerFactory.getLogger(CourseExecutionInterface.class);
 
     private static final String ENDPOINT = "http://localhost:8080";
@@ -17,7 +17,7 @@ public class CourseExecutionInterface implements CourseExecutionContract{
         logger.info("findCourseExecution id:{}", courseExecutionId);
         RestTemplate restTemplate = new RestTemplate();
         try {
-            CourseExecutionDto courseExecutionDto = restTemplate.getForObject(ENDPOINT + "rest/execution/find?courseExecutionId=" +
+            CourseExecutionDto courseExecutionDto = restTemplate.getForObject(ENDPOINT + "rest/execution/find/" +
                     courseExecutionId, CourseExecutionDto.class);
             logger.info("CourseExecutionDto: {}", courseExecutionDto);
             return courseExecutionDto;

@@ -20,6 +20,7 @@ import pt.ulisboa.tecnico.socialsoftware.common.utils.DateHandler;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;

@@ -16,7 +16,11 @@ public class QuizInternalController {
     @Autowired
     MonolithService monolithService;
 
-    @RequestMapping(value = "/find/{quizId}", method = RequestMethod.POST)
+    public QuizInternalController(MonolithService monolithService) {
+        this.monolithService = monolithService;
+    }
+
+    @RequestMapping(value = "/find/{quizId}", method = RequestMethod.GET)
     public ResponseEntity<QuizDto> findQuizById(@PathVariable Integer quizId) {
         logger.info("findQuizById quizId:{}", quizId);
         try {

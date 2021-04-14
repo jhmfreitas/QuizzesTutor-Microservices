@@ -5,10 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import pt.ulisboa.tecnico.socialsoftware.common.dtos.execution.CourseExecutionDto;
 
 @RestController
@@ -19,8 +16,12 @@ public class CourseExecutionInternalController {
     @Autowired
     MonolithService monolithService;
 
-    @RequestMapping(value = "/find", method = RequestMethod.GET)
-    public ResponseEntity<CourseExecutionDto> findCourseExecution(@RequestParam Integer courseExecutionId) {
+    public CourseExecutionInternalController(MonolithService monolithService) {
+        this.monolithService = monolithService;
+    }
+
+    @RequestMapping(value = "/find/{courseExecutionId}", method = RequestMethod.GET)
+    public ResponseEntity<CourseExecutionDto> findCourseExecution(@PathVariable Integer courseExecutionId) {
         logger.info("findCourseExecution id:{}", courseExecutionId);
         try {
             CourseExecutionDto result = monolithService.findCourseExecution(courseExecutionId);

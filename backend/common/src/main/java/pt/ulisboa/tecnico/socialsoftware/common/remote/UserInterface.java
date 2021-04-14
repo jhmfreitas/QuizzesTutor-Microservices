@@ -10,17 +10,14 @@ import pt.ulisboa.tecnico.socialsoftware.common.exceptions.RemoteAccessException
 public class UserInterface implements UserContract {
     private static final Logger logger = LoggerFactory.getLogger(UserInterface.class);
 
-    private static final String ENDPOINT = "http://localhost:";
-
-    public final String port = "8080";
+    private static final String ENDPOINT = "http://localhost:8080";
 
     @Override
     public UserDto findUser(Integer userId) {
         logger.info("findUser id:{}", userId);
         RestTemplate restTemplate = new RestTemplate();
         try {
-            UserDto userDto = restTemplate.getForObject(ENDPOINT + port +
-                    "/rest/users/find/" + userId, UserDto.class);
+            UserDto userDto = restTemplate.getForObject(ENDPOINT + "/rest/users/find/" + userId, UserDto.class);
             logger.info("UserDto: {}", userDto);
             return userDto;
         } catch (HttpClientErrorException e) {

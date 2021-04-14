@@ -17,6 +17,10 @@ public class AnswerInternalController {
     @Autowired
     MonolithService monolithService;
 
+    public AnswerInternalController(MonolithService monolithService) {
+        this.monolithService = monolithService;
+    }
+
     @RequestMapping(value = "/generateQuiz/{courseExecutionId}/{creatorId}", method = RequestMethod.GET)
     public ResponseEntity<Integer> generateQuizAndGetId(@PathVariable Integer courseExecutionId, @PathVariable Integer creatorId,
                                                         @RequestBody ExternalStatementCreationDto quizDetails) {

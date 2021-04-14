@@ -9,14 +9,13 @@ import pt.ulisboa.tecnico.socialsoftware.common.dtos.user.UserDto;
 import pt.ulisboa.tecnico.socialsoftware.common.remote.UserInterface;
 
 @RestController
+@RequestMapping(value = "/rest/users")
 public class UserController {
 
     @Autowired
     private UserInterface userInterface;
 
-    public int port;
-
-    @RequestMapping(method = RequestMethod.GET, value = "/rest/users/find/{userId}", produces = "application/json")
+    @RequestMapping(method = RequestMethod.GET, value = "/find/{userId}", produces = "application/json")
     public UserDto findUser(@PathVariable Integer userId) {
         return userInterface.findUser(userId);
     }

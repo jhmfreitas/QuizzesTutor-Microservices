@@ -17,23 +17,20 @@ Contract.make {
 
     request {
         method 'GET'
+        """value(consumer(regex('/foo/[0-9]{5}')))"""
         url '/rest/users/find/1'
-        """body(file("request.json"))
-        headers {
-            contentType(applicationJson())
-        }"""
     }
     response {
         status 200
         body(
-                id: $(regex(positiveInt())),
-                username: anyNonEmptyString(),
-                email: $(regex(email())),
-                name: anyNonEmptyString(),
+                id: 1,
+                username: "a@a.a",
+                email: "user1@mail.com",
+                name: "User 1 Name",
                 role: "STUDENT",
-                active: $(regex(anyBoolean())),
-                creationDate: anyNonEmptyString(),
-                lastAccess: anyNonEmptyString()
+                active: true,
+                creationDate: "2021-04-10T15:34:10.830873Z",
+                lastAccess: "2021-04-10T15:34:10.830873Z"
         )
         headers {
             contentType(applicationJson())

@@ -19,8 +19,8 @@ public class QuizInterface implements QuizContract {
         logger.info("findQuizById quizId:{}", quizId);
         RestTemplate restTemplate = new RestTemplate();
         try {
-            QuizDto quizDto = restTemplate.postForObject(ENDPOINT + "/rest/quiz/find/" + quizId,
-                     null, QuizDto.class);
+            QuizDto quizDto = restTemplate.getForObject(ENDPOINT + "/rest/quiz/find/" + quizId,
+                     QuizDto.class);
             logger.info("findQuizById: {}", quizDto);
             return quizDto;
         } catch (HttpClientErrorException e) {

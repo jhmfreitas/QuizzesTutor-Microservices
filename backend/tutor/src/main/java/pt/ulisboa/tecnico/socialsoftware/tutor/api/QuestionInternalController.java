@@ -20,7 +20,11 @@ public class QuestionInternalController {
     @Autowired
     MonolithService monolithService;
 
-    @RequestMapping(value = "/findTopics", method = RequestMethod.POST)
+    public QuestionInternalController(MonolithService monolithService) {
+        this.monolithService = monolithService;
+    }
+
+    @RequestMapping(value = "/findTopics", method = RequestMethod.GET)
     public ResponseEntity<FindTopicsDto> findTopics(@RequestBody TopicListDto topicListDto) {
         logger.info("findTopics topicListDto:{}", topicListDto);
         try {

@@ -13,6 +13,10 @@ import pt.ulisboa.tecnico.socialsoftware.common.remote.QuestionInterface
 import pt.ulisboa.tecnico.socialsoftware.common.remote.QuizInterface
 import pt.ulisboa.tecnico.socialsoftware.common.remote.UserInterface
 import pt.ulisboa.tecnico.socialsoftware.tournament.services.local.TournamentProvidedService
+import pt.ulisboa.tecnico.socialsoftware.tournament.services.remote.AnswerController
+import pt.ulisboa.tecnico.socialsoftware.tournament.services.remote.CourseExecutionController
+import pt.ulisboa.tecnico.socialsoftware.tournament.services.remote.QuestionController
+import pt.ulisboa.tecnico.socialsoftware.tournament.services.remote.QuizController
 import pt.ulisboa.tecnico.socialsoftware.tournament.services.remote.TournamentRequiredService
 import pt.ulisboa.tecnico.socialsoftware.tournament.services.remote.UserController
 
@@ -100,4 +104,23 @@ class BeanConfiguration {
         return new UserController()
     }
 
+    @Bean
+    QuestionController questionController() {
+        return new QuestionController();
+    }
+
+    @Bean
+    QuizController quizController() {
+        return new QuizController();
+    }
+
+    @Bean
+    CourseExecutionController courseExecutionController() {
+        return new CourseExecutionController();
+    }
+
+    @Bean
+    AnswerController answerController() {
+        return new AnswerController();
+    }
 }
